@@ -1,0 +1,12 @@
+# Read the documentation: https://github.com/FriendsOfSymfony/FOSElasticaBundle/blob/master/doc/setup.md
+fos_elastica:
+    indexes:
+        freelance:
+            persistence:
+                driver: orm
+                model: App\Entity\FreelanceConso
+                provider: ~
+                finder: ~
+            properties:
+                firstName: ~
+                lastName: ~
