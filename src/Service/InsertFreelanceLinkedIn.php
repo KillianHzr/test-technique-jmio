@@ -19,8 +19,11 @@ readonly class InsertFreelanceLinkedIn
 
         $freelanceLinkedIn = $this->entityManager->getRepository(FreelanceLinkedIn::class)->findOneBy(['url' => $linkedInUrl]);
         if (!$freelanceLinkedIn) {
+            $now = new \DateTime();
             $freelanceLinkedIn = new FreelanceLinkedIn();
             $freelanceLinkedIn->setUrl($linkedInUrl);
+            $freelanceLinkedIn->setCreatedAt($now);
+            $freelanceLinkedIn->setUpdatedAt($now);
             $this->entityManager->persist($freelanceLinkedIn);
         }
 

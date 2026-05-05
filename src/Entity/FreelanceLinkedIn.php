@@ -47,7 +47,7 @@ class FreelanceLinkedIn
 
     public function getFirstName(): ?string
     {
-        return $this->id*$this->id;
+        return $this->firstName;
     }
 
     public function setFirstName(?string $firstName): static

@@ -40,6 +40,12 @@ class FreelanceJeanPaul
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private \DateTimeInterface $updatedAt;
 
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
+    }
+
     public function getId(): ?int
     {
         return $this->id;

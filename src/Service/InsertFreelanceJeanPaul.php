@@ -16,8 +16,11 @@ readonly class InsertFreelanceJeanPaul
     {
         $freelanceJeanPaul = $this->entityManager->getRepository(FreelanceJeanPaul::class)->findOneBy(['jeanPaulId' => $dto->jeanPaulId]);
         if (!$freelanceJeanPaul) {
+            $now = new \DateTime();
             $freelanceJeanPaul = new FreelanceJeanPaul();
             $freelanceJeanPaul->setJeanPaulId($dto->jeanPaulId);
+            $freelanceJeanPaul->setCreatedAt($now);
+            $freelanceJeanPaul->setUpdatedAt($now);
             $this->entityManager->persist($freelanceJeanPaul);
         }
 
