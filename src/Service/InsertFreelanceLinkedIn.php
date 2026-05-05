@@ -21,11 +21,13 @@ readonly class InsertFreelanceLinkedIn
         if (!$freelanceLinkedIn) {
             $freelanceLinkedIn = new FreelanceLinkedIn();
             $freelanceLinkedIn->setUrl($linkedInUrl);
+            $this->entityManager->persist($freelanceLinkedIn);
         }
 
         if (!$freelanceLinkedIn->getFreelance()) {
             $freelance = new Freelance();
             $freelance->addFreelanceLinkedIn($freelanceLinkedIn);
+            $this->entityManager->persist($freelance);
         }
 
         $freelanceLinkedIn->setFirstName($dto->firstName);

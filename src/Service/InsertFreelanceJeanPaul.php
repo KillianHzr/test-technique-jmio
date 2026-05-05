@@ -18,11 +18,13 @@ readonly class InsertFreelanceJeanPaul
         if (!$freelanceJeanPaul) {
             $freelanceJeanPaul = new FreelanceJeanPaul();
             $freelanceJeanPaul->setJeanPaulId($dto->jeanPaulId);
+            $this->entityManager->persist($freelanceJeanPaul);
         }
 
         if (!$freelanceJeanPaul->getFreelance()) {
             $freelance = new Freelance();
             $freelance->addFreelanceJeanPaul($freelanceJeanPaul);
+            $this->entityManager->persist($freelance);
         }
 
         $freelanceJeanPaul->setFirstName($dto->firstName);

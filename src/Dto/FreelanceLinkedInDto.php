@@ -13,10 +13,10 @@ class FreelanceLinkedInDto
         #[Assert\NotBlank]
         #[Assert\NotNull]
         public string $lastName,
-        public ?string $jobTitle = null,
         #[Assert\NotBlank]
         #[Assert\NotNull]
-        public string $url
+        public string $url,
+        public ?string $jobTitle = null,
     )
     {
     }
