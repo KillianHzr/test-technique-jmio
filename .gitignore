@@ -22,5 +22,6 @@
 .idea
 .docker-dev/logs
 .docker-dev/.data
+.DS_Store
 
 supervisord.log
