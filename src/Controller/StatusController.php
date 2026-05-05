@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route("/status", name: "status_")]
 class StatusController extends AbstractController
 {
-    #[Route("/up", name: "up", methods: ["POST"])]
+    #[Route("/up", name: "up", methods: ["GET"])]
     public function status(): JsonResponse
     {
         return $this->json(['status' => 'ok'], Response::HTTP_OK);
