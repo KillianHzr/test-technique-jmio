@@ -7,10 +7,16 @@ use App\Entity\FreelanceConso;
 use App\Entity\FreelanceJeanPaul;
 use App\Entity\FreelanceLinkedIn;
 use Doctrine\ORM\EntityManagerInterface;
+use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 readonly class FreelanceConsolider
 {
-    public function __construct(private EntityManagerInterface $entityManager)
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        #[Autowire(service: 'fos_elastica.object_persister.freelance')]
+        private ObjectPersisterInterface $persister,
+    )
     {
     }
 
@@ -32,6 +38,7 @@ readonly class FreelanceConsolider
         $freelanceConso->setJobTitle($this->getJobTitle($freelance));
 
         $this->entityManager->flush();
+        $this->persister->replaceOne($freelanceConso);
 
         return $freelanceConso;
     }
