@@ -13,3 +13,6 @@ fos_elastica:
             properties:
                 firstName: ~
                 lastName: ~
+                jobTitle: ~
+                linkedInUrl: ~
+                fullName: ~
