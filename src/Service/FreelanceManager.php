@@ -18,6 +18,6 @@ readonly class FreelanceManager
     // More or less 176k freelances. It would be cool if jean-michel.io had a public API.
     public function getNumberOfFreelancesInJeanMichelWebsiteHomePage(): int
     {
-        return 0;
+        return $this->entityManager->getRepository(Freelance::class)->count([]);
     }
 }

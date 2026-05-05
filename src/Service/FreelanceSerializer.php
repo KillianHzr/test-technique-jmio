@@ -14,18 +14,18 @@ readonly class FreelanceSerializer
 
     public function serializeFreelance(Freelance $freelance, array $groups): string
     {
-        return $this->serializer->serialize($freelance, 'json', $groups);
+        return $this->serializer->serialize($freelance, 'json', ['groups' => $groups]);
     }
 
     #[ArrayShape([Freelance::class])]
     public function serializeFreelances(array $freelances, array $groups): string
     {
-        return $this->serializer->serialize($freelances, 'json', $groups);
+        return $this->serializer->serialize($freelances, 'json', ['groups' => $groups]);
     }
 
     #[ArrayShape([FreelanceConso::class])]
     public function serializeFreelancesConso(array $freelances, array $groups): string
     {
-        return $this->serializer->serialize($freelances, 'json', $groups);
+        return $this->serializer->serialize($freelances, 'json', ['groups' => $groups]);
     }
 }

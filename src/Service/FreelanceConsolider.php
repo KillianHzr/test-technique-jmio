@@ -31,6 +31,8 @@ readonly class FreelanceConsolider
         $freelanceConso->setLinkedInUrl($this->getLinkedInUrl($freelance));
         $freelanceConso->setJobTitle($this->getJobTitle($freelance));
 
+        $this->entityManager->flush();
+
         return $freelanceConso;
     }
 
