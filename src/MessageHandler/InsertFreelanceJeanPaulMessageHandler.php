@@ -20,7 +20,6 @@ final readonly class InsertFreelanceJeanPaulMessageHandler
 
     public function __invoke(InsertFreelanceJeanPaulMessage $message): void
     {
-        die('debug');
         $lock = $this->lockFactory->createLock('insert_freelance', 300, false);
 
         $lock->acquire(true);
