@@ -31,7 +31,7 @@
   {"firstName": "Jérôme", "lastName": "Guerin", "jobTitle": "Architecte Cloud", "jeanPaulId": 29},
   {"firstName": "Karine", "lastName": "Perrin", "jobTitle": "Ingénieur sécurité", "jeanPaulId": 30},
   {"firstName": "Léo", "lastName": "Mercier", "jobTitle": "Administrateur Système", "jeanPaulId": 31},
-  {"firstName": "Manon", "lastName": "Faure", "jobTitle": "Chef de projet IT", "jeanPaulId": 32}
+  {"firstName": "Manon", "lastName": "Faure", "jobTitle": "Chef de projet IT", "jeanPaulId": 32},
   {"firstName": "Noémie", "lastName": "Rousseau", "jobTitle": "Consultant IT", "jeanPaulId": 33},
   {"firstName": "Olivier", "lastName": "Dupont", "jobTitle": "Développeur mobile", "jeanPaulId": 34},
   {"firstName": "Pauline", "lastName": "Martin", "jobTitle": "Spécialiste Big Data", "jeanPaulId": 35},
