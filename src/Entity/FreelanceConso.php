@@ -31,7 +31,7 @@ class FreelanceConso
     private ?Freelance $freelance = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['freelance_detail'])]
+    #[Groups(['freelance_detail', 'freelance_conso'])]
     private ?string $linkedInUrl = null;
 
     #[ORM\Column(length: 255, nullable: true)]

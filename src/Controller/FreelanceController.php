@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Dto\SearchFreelanceConsoDto;
-use App\Entity\Freelance;
+use App\Entity\FreelanceConso;
 use App\Service\FreelanceSearchService;
 use App\Service\FreelanceSerializer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,23 +24,29 @@ class FreelanceController extends AbstractController
     #[Route('', name: 'search', methods: ['GET'])]
     public function search(#[MapQueryString] SearchFreelanceConsoDto $dto = new SearchFreelanceConsoDto()): Response
     {
-        $freelances = $this->freelanceSearchService->searchFreelance($dto->query, $dto->page, $dto->limit);
-        $json = $this->freelanceSerializer->serializeFreelancesConso($freelances, ['freelance_conso']);
+        $result = $this->freelanceSearchService->searchFreelance($dto->query, $dto->page, $dto->limit, $dto->sort);
+        $json   = $this->freelanceSerializer->serializeFreelancesConso($result['results'], ['freelance_conso']);
 
-        return new Response($json, Response::HTTP_OK, ['Content-Type' => 'application/json']);
+        return new Response($json, Response::HTTP_OK, [
+            'Content-Type'  => 'application/json',
+            'X-Total-Count' => (string) $result['total'],
+            'X-Total-Pages' => (string) $result['pages'],
+        ]);
     }
 
     #[Route('/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function detail(int $id): Response
     {
-        $freelance = $this->entityManager->getRepository(Freelance::class)->find($id);
+        $freelance = $this->entityManager->getRepository(FreelanceConso::class)->find($id);
 
         if (!$freelance) {
             return $this->json(['error' => 'Freelance not found'], Response::HTTP_NOT_FOUND);
         }
 
-        $json = $this->freelanceSerializer->serializeFreelance($freelance, ['freelance_detail']);
-
-        return new Response($json, Response::HTTP_OK, ['Content-Type' => 'application/json']);
+        return new Response(
+            $this->freelanceSerializer->serializeFreelancesConso([$freelance], ['freelance_conso']),
+            Response::HTTP_OK,
+            ['Content-Type' => 'application/json']
+        );
     }
 }
