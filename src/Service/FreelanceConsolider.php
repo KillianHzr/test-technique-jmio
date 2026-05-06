@@ -116,6 +116,8 @@ readonly class FreelanceConsolider
             $jobTitles[] = $freelanceLinkedIn->getJobTitle();
         }
 
+        $jobTitles = array_filter($jobTitles);
+
         usort($jobTitles, function($a, $b) {
             return strlen($b) - strlen($a);
         });
