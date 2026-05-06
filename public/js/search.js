@@ -1,4 +1,4 @@
-const LIMIT = 12;
+const LIMIT = 30;
 let page = 1;
 let query = '*';
 let sortOrder = '';
@@ -44,12 +44,10 @@ function showSkeletons() {
     if (!$grid) return;
     $empty.style.display = 'none';
     $grid.innerHTML = Array(LIMIT).fill('').map(() => `
-        <div class="card card--skeleton" style="opacity: 1;">
-            <div class="sk sk--xs"></div>
-            <div class="sk sk--circle"></div>
-            <div class="sk sk--lg"></div>
-            <div class="sk sk--md"></div>
-            <div class="sk sk--arrow"></div>
+        <div class="av av--skeleton">
+            <div class="av__circle sk--circle"></div>
+            <div class="sk sk--name"></div>
+            <div class="sk sk--job"></div>
         </div>
     `).join('');
     if (!headerShown && $header) $header.style.display = 'none';
@@ -65,10 +63,12 @@ function applySort(data) {
 }
 
 function renderEmpty(q) {
-    if ($header) $header.style.display = 'none';
+    if ($header) $header.style.display = 'flex';
+    if ($queryEl) $queryEl.textContent = q || 'Recherche';
+    if ($meta) $meta.textContent = `0 résultat`;
     if ($empty) $empty.style.display = 'flex';
     if ($grid) $grid.innerHTML = '';
-    headerShown = false;
+    headerShown = true;
     if ($emptyText) $emptyText.textContent = `Aucun résultat pour « ${q} »`;
     if ($empty) gsap.from($empty, {
         opacity: 0,
@@ -86,19 +86,15 @@ window.startCardEntrance = () => {
 };
 
 function animateCards() {
-    const cards = document.querySelectorAll('.card');
-    if (cards.length > 0) {
-        gsap.to(cards, {
+    const items = document.querySelectorAll('.av');
+    if (items.length > 0) {
+        gsap.to(items, {
             y: 0,
             opacity: 1,
             scale: 1,
-            duration: 1.2,
-            stagger: {
-                each: 0.08,
-                grid: 'auto',
-                from: 'start'
-            },
-            ease: 'back.out(1.2)'
+            duration: 0.5,
+            stagger: { each: 0.04, from: 'start' },
+            ease: 'back.out(1.6)',
         });
     }
 }
@@ -112,26 +108,24 @@ function renderCards(data) {
     if ($meta) $meta.textContent = `${totalCount} freelance${totalCount > 1 ? 's' : ''} · Page ${page}/${totalPages}`;
 
     if ($grid) {
-        $grid.innerHTML = data.map((f, i) => `
-            <article class="card" data-id="${f.id}" style="opacity: 0; transform: translateY(40px) scale(0.95);">
-                <div class="card__initials">${initials(f.firstName, f.lastName)}</div>
-                <p class="card__num">ID #${f.id}</p>
-                <p class="card__name">${[f.firstName, f.lastName].filter(Boolean).join(' ') || 'Anonyme'}</p>
-                <p class="card__job">${f.jobTitle ?? 'Freelance'}</p>
-                <div class="card__arrow">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </div>
-            </article>
-        `).join('');
+        $grid.innerHTML = data.map((f) => {
+            const name = [f.firstName, f.lastName].filter(Boolean).join(' ') || 'Anonyme';
+            return `
+            <article class="av" data-id="${f.id}">
+                <div class="av__circle">${initials(f.firstName, f.lastName)}</div>
+                <p class="av__name">${name}</p>
+                <p class="av__job">${f.jobTitle ?? 'Freelance'}</p>
+            </article>`;
+        }).join('');
+
+        gsap.set($grid.querySelectorAll('.av'), { opacity: 0, y: 24, scale: 0.85 });
 
         if (!initialLoad || masterIntroComplete) {
             animateCards();
         }
 
-        $grid.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('click', () => openDrawer(parseInt(card.dataset.id, 10)));
+        $grid.querySelectorAll('.av').forEach(a => {
+            a.addEventListener('click', () => openDrawer(parseInt(a.dataset.id, 10)));
         });
     }
 }
@@ -145,7 +139,7 @@ function renderPagination() {
         const b = document.createElement('button');
         b.className = 'pag-btn' + (active ? ' pag-btn--active' : '');
         b.textContent = label;
-        b.disabled = active || disabled;
+        b.disabled = disabled;
         if (!active && !disabled) b.addEventListener('click', () => search(query, p));
         return b;
     };
@@ -176,62 +170,58 @@ function renderPagination() {
 function openDrawer(id) {
     if (!$drawerBody) return;
     $drawerBody.innerHTML = `
-        <div class="drawer__initials sk"></div>
-        <div class="drawer__name sk sk--lg"></div>
-        <div class="drawer__job sk sk--md"></div>
-        <div class="drawer__content sk sk--lg"></div>
+        <div class="drawer__sk drawer__sk--circle"></div>
+        <div class="drawer__sk drawer__sk--h1"></div>
+        <div class="drawer__sk drawer__sk--h2"></div>
+        <div class="drawer__sk drawer__sk--line"></div>
+        <div class="drawer__sk drawer__sk--sm"></div>
     `;
     $drawer.setAttribute('aria-hidden', 'false');
 
-    if ($drawerOverlay) gsap.to($drawerOverlay, {
-        opacity: 1,
-        duration: 0.5
-    });
-    if ($drawerPanel) gsap.to($drawerPanel, {
-        x: 0,
-        duration: 0.8,
-        ease: 'expo.out'
-    });
+    if ($drawerOverlay) gsap.to($drawerOverlay, { opacity: 1, duration: 0.4 });
+    if ($drawerPanel) gsap.to($drawerPanel, { x: 0, duration: 0.7, ease: 'expo.out' });
 
     fetch(`/api/freelances/${id}`)
         .then(r => r.json())
         .then(data => {
             const f = Array.isArray(data) ? data[0] : data;
-            if (!f) {
-                closeDrawer();
-                return;
-            }
+            if (!f) { closeDrawer(); return; }
+
             const name = [f.firstName, f.lastName].filter(Boolean).join(' ') || 'Anonyme';
-            $drawerBody.innerHTML = `
-                <div class="drawer__initials">${initials(f.firstName, f.lastName)}</div>
-                <p class="drawer__name">${name}</p>
-                <p class="drawer__job">${f.jobTitle ?? 'Freelance'}</p>
-                
-                <div class="drawer__content">
-                    <p>Expert passionné avec plus de 5 ans d'expérience dans l'écosystème tech. Spécialisé dans la résolution de problèmes complexes et l'optimisation de performances, ${f.firstName || 'ce profil'} accompagne les entreprises dans leur transformation digitale avec une approche orientée résultats et qualité logicielle.</p>
-                    <br>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.</p>
-                </div>
+            const href = f.linkedInUrl
+                ? (f.linkedInUrl.startsWith('http') ? f.linkedInUrl : `https://${f.linkedInUrl}`)
+                : null;
 
-                <div class="drawer__actions">
-                    ${f.linkedInUrl ? `
-                    <a class="drawer__link" href="${f.linkedInUrl.startsWith('http') ? f.linkedInUrl : `https://${f.linkedInUrl}`}" target="_blank" rel="noopener noreferrer">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;">
-                            <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/>
-                            <rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
-                        </svg>
-                        PROFIL LINKEDIN
-                    </a>` : ''}
-                    <button class="btn-recruit">Recruter ce talent</button>
-                </div>
-            `;
-
-            gsap.from('.drawer__panel > *', {
-                y: 30,
-                opacity: 0,
-                stagger: 0.1,
-                duration: 0.8,
-                ease: 'expo.out'
+            gsap.to($drawerBody, {
+                opacity: 0, duration: 0.15,
+                onComplete: () => {
+                    $drawerBody.innerHTML = `
+                        <div class="drawer__initials">${initials(f.firstName, f.lastName)}</div>
+                        <p class="drawer__name">${name}</p>
+                        <p class="drawer__job">${f.jobTitle ?? 'Freelance'}</p>
+                        <div class="drawer__content">
+                            <p>Expert passionné avec plus de 5 ans d'expérience dans l'écosystème tech. Spécialisé dans la résolution de problèmes complexes et l'optimisation de performances, ${f.firstName || 'ce profil'} accompagne les entreprises dans leur transformation digitale.</p>
+                        </div>
+                        <div class="drawer__actions">
+                            ${href ? `
+                            <a class="drawer__link" href="${href}" target="_blank" rel="noopener noreferrer">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;">
+                                    <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/>
+                                    <rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+                                </svg>
+                                PROFIL LINKEDIN
+                            </a>` : ''}
+                            <button class="btn-recruit">Recruter ce talent</button>
+                        </div>
+                    `;
+                    gsap.fromTo($drawerBody,
+                        { opacity: 0 },
+                        { opacity: 1, duration: 0.2 }
+                    );
+                    gsap.from(Array.from($drawerBody.children), {
+                        y: 14, opacity: 0, stagger: 0.07, duration: 0.55, ease: 'expo.out'
+                    });
+                }
             });
         })
         .catch(() => closeDrawer());
