@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\Freelance;
+use App\Entity\FreelanceConso;
 use App\Service\FreelanceSerializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -28,7 +28,7 @@ class FreelanceDetailCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('freelanceId', InputArgument::REQUIRED, 'Freelance ID')
+            ->addArgument('freelanceId', InputArgument::REQUIRED, 'Freelance ID (Consolidated)')
         ;
     }
 
@@ -37,13 +37,13 @@ class FreelanceDetailCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $freelanceId = $input->getArgument('freelanceId');
 
-        $freelance = $this->entityManager->getRepository(Freelance::class)->find($freelanceId);
+        $freelance = $this->entityManager->getRepository(FreelanceConso::class)->find($freelanceId);
         if (!$freelance) {
             $io->error('Freelance not found');
             return Command::FAILURE;
         }
 
-        $freelanceJson = $this->freelanceSerializer->serializeFreelance($freelance, ['freelance_detail']);
+        $freelanceJson = $this->freelanceSerializer->serializeFreelancesConso([$freelance], ['freelance_conso']);
 
         dump($freelanceJson);
         return Command::SUCCESS;

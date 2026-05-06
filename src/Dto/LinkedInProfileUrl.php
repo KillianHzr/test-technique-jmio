@@ -16,31 +16,9 @@ class LinkedInProfileUrl
 
     private function setCleanUrl(string $rawUrl): void
     {
-        try {
-            $baseUrl = 'linkedin.com/in/';
-            $linkedInCom = strpos($rawUrl, $baseUrl);
-          
-            if ($linkedInCom === false || str_ends_with($rawUrl, ":")) {
-                throw new \Exception("No linkedin.com/in/ pattern found");
-            }
-
-            $cleanUrl = substr($rawUrl, $linkedInCom, strlen($baseUrl));
-            $profilePart = substr($rawUrl, $linkedInCom+strlen($baseUrl));
-
-            if (empty($profilePart)) {
-                throw new \Exception("No profile part pattern found");
-            }
-            for ($i = 0; $i < strlen($profilePart); $i++) {
-                if ($profilePart[$i] === '/' || $profilePart[$i] === '?') {
-                    break;
-                }
-                $cleanUrl .= $profilePart[$i];
-            }
-
-            if (!empty($cleanUrl)) {
-                $this->cleanUrl = urldecode($cleanUrl);
-            }
-        } catch (\Exception $exception) {
+        if (preg_match('#linkedin\.com/in/([a-zA-Z0-9\-_%]+)#', $rawUrl, $matches)) {
+            $this->cleanUrl = 'linkedin.com/in/' . $matches[1];
+        } else {
             $this->cleanUrl = null;
         }
     }
