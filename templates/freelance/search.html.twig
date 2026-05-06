@@ -66,7 +66,7 @@
                     </div>
 
                     <div class="filter-group">
-                        <p class="filter-label">JEAN-MICHEL KONSULTANT</p>
+                        <p class="filter-label">JEAN-MICHEL KATÉGORI</p>
                         <div class="results__filters">
                             <button class="filter-tag active" data-query="">Tous</button>
                             <button class="filter-tag" data-query="Développeur">Développeur</button>
@@ -126,6 +126,7 @@
             </footer>
         </main>
 
+        <!-- DRAWER -->
         <div class="drawer" id="drawer" aria-hidden="true">
             <div class="drawer__overlay" id="drawerOverlay"></div>
             <div class="drawer__panel">
@@ -137,8 +138,17 @@
                 <div class="drawer__body" id="drawerBody"></div>
             </div>
         </div>
-    </div>
-{% endblock %}
+
+        <!-- CUSTOM CONTEXT MENU -->
+        <div class="context-menu" id="contextMenu">
+            <div class="context-menu__header">Jean-Michel Menu</div>
+            <div class="context-menu__item">Jean-Michel Inspecteur</div>
+            <div class="context-menu__item">Jean-Michel Recruteur</div>
+            <div class="context-menu__item">Jean-Michel Partageur</div>
+            <div class="context-menu__divider"></div>
+            <div class="context-menu__item context-menu__item--danger">Jean-Michel Quitter</div>
+        </div>
+        {% endblock %}
 
 {% block javascripts %}
 <script src="/js/search.js"></script>
