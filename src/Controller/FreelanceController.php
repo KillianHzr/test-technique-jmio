@@ -24,13 +24,13 @@ class FreelanceController extends AbstractController
     #[Route('', name: 'search', methods: ['GET'])]
     public function search(#[MapQueryString] SearchFreelanceConsoDto $dto = new SearchFreelanceConsoDto()): Response
     {
-        $result = $this->freelanceSearchService->searchFreelance($dto->query, $dto->page, $dto->limit, $dto->sort);
-        $json   = $this->freelanceSerializer->serializeFreelancesConso($result['results'], ['freelance_conso']);
+        $searchResult = $this->freelanceSearchService->searchFreelance($dto->query, $dto->page, $dto->limit, $dto->sort);
+        $json         = $this->freelanceSerializer->serializeFreelancesConso($searchResult->results, ['freelance_conso']);
 
         return new Response($json, Response::HTTP_OK, [
             'Content-Type'  => 'application/json',
-            'X-Total-Count' => (string) $result['total'],
-            'X-Total-Pages' => (string) $result['pages'],
+            'X-Total-Count' => (string) $searchResult->total,
+            'X-Total-Pages' => (string) $searchResult->pages,
         ]);
     }
 

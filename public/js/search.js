@@ -25,6 +25,7 @@ const $drawerPanel = document.querySelector('.drawer__panel');
 const $drawerBody = document.getElementById('drawerBody');
 const $drawerClose = document.getElementById('drawerClose');
 const $drawerOverlay = document.getElementById('drawerOverlay');
+const $searchTip = document.getElementById('searchTip');
 
 function initials(first, last) {
     return ((first?.[0] ?? '') + (last?.[0] ?? '')).toUpperCase() || '?';
@@ -287,14 +288,25 @@ async function search(q = '*', p = 1) {
     }
 }
 
+let warnTimer;
+function warnTooShort() {
+    if (!$searchTip) return;
+    $searchTip.textContent = 'On recrute des freelances, pas des devinettes.';
+    $searchTip.classList.add('search-tip--show');
+    clearTimeout(warnTimer);
+    warnTimer = setTimeout(() => $searchTip.classList.remove('search-tip--show'), 2800);
+}
+
 if ($btn && $input) {
     $btn.addEventListener('click', () => {
+        if ($input.value.trim().length === 1) { warnTooShort(); return; }
         setActiveFilter($input.value.trim());
         search($input.value.trim());
     });
 
     $input.addEventListener('keydown', e => {
         if (e.key === 'Enter') {
+            if ($input.value.trim().length === 1) { warnTooShort(); return; }
             setActiveFilter($input.value.trim());
             search($input.value.trim());
         }

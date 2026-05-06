@@ -5,6 +5,21 @@ fos_elastica:
             url: '%env(ELASTICSEARCH_URL)%'
     indexes:
         freelance:
+            settings:
+                index:
+                    max_ngram_diff: 13
+                analysis:
+                    tokenizer:
+                        ngram_tokenizer:
+                            type: ngram
+                            min_gram: 2
+                            max_gram: 15
+                            token_chars: [letter, digit]
+                    analyzer:
+                        ngram_analyzer:
+                            type: custom
+                            tokenizer: ngram_tokenizer
+                            filter: [lowercase]
             finder: true
             persistence:
                 driver: orm
@@ -16,11 +31,27 @@ fos_elastica:
                     fields:
                         keyword:
                             type: keyword
+                        ngram:
+                            type: text
+                            analyzer: ngram_analyzer
                 lastName:
                     type: text
                     fields:
                         keyword:
                             type: keyword
-                jobTitle: ~
+                        ngram:
+                            type: text
+                            analyzer: ngram_analyzer
+                jobTitle:
+                    type: text
+                    fields:
+                        ngram:
+                            type: text
+                            analyzer: ngram_analyzer
                 linkedInUrl: ~
-                fullName: ~
+                fullName:
+                    type: text
+                    fields:
+                        ngram:
+                            type: text
+                            analyzer: ngram_analyzer

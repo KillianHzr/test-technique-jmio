@@ -24,8 +24,11 @@ readonly class FreelanceSerializer
     }
 
     #[ArrayShape([FreelanceConso::class])]
-    public function serializeFreelancesConso(array $freelances, array $groups): string
+    public function serializeFreelancesConso(iterable $freelances, array $groups): string
     {
+        if ($freelances instanceof \Traversable) {
+            $freelances = iterator_to_array($freelances);
+        }
         return $this->serializer->serialize($freelances, 'json', ['groups' => $groups]);
     }
 }

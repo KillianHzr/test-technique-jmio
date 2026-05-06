@@ -1,7 +1,9 @@
 <?php
 namespace App\Service;
 
+use App\Dto\SearchResult;
 use Elastica\Query;
+use Elastica\Query\BoolQuery;
 use Elastica\Query\MatchAll;
 use Elastica\Query\MultiMatch;
 use FOS\ElasticaBundle\Finder\PaginatedFinderInterface;
@@ -16,7 +18,7 @@ readonly class FreelanceSearchService
     {
     }
 
-    public function searchFreelance(string $query, int $page = 1, int $limit = 10, ?string $sort = null): array
+    public function searchFreelance(string $query, int $page = 1, int $limit = 10, ?string $sort = null): SearchResult
     {
         $elasticaQuery = $this->buildQuery($query);
 
@@ -37,11 +39,13 @@ readonly class FreelanceSearchService
             $results[] = $item;
         }
 
-        return [
-            'results' => $results,
-            'total'   => $paginator->getNbResults(),
-            'pages'   => (int) ceil($paginator->getNbResults() / $limit),
-        ];
+        return new SearchResult(
+            results: $results,
+            total: $paginator->getNbResults(),
+            pages: (int) ceil($paginator->getNbResults() / $limit),
+            currentPage: $page,
+            limit: $limit
+        );
     }
 
     private function buildQuery(string $query): Query
@@ -50,12 +54,22 @@ readonly class FreelanceSearchService
             return new Query(new MatchAll());
         }
 
-        $multiMatch = new MultiMatch();
-        $multiMatch->setQuery($query);
-        $multiMatch->setFields(['fullName^3', 'firstName^2', 'lastName^2', 'jobTitle^2', 'linkedInUrl']);
-        $multiMatch->setFuzziness('AUTO');
-        $multiMatch->setOperator(MultiMatch::OPERATOR_OR);
+        $fuzzy = new MultiMatch();
+        $fuzzy->setQuery($query);
+        $fuzzy->setFields(['fullName^3', 'firstName^2', 'lastName^2', 'jobTitle^2', 'linkedInUrl']);
+        $fuzzy->setFuzziness('AUTO');
+        $fuzzy->setOperator(MultiMatch::OPERATOR_OR);
 
-        return new Query($multiMatch);
+        $ngram = new MultiMatch();
+        $ngram->setQuery($query);
+        $ngram->setFields(['fullName.ngram^3', 'firstName.ngram^2', 'lastName.ngram^2', 'jobTitle.ngram']);
+        $ngram->setOperator(MultiMatch::OPERATOR_OR);
+
+        $bool = new BoolQuery();
+        $bool->addShould($fuzzy);
+        $bool->addShould($ngram);
+        $bool->setMinimumShouldMatch(1);
+
+        return new Query($bool);
     }
 }
