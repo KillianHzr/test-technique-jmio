@@ -6,6 +6,7 @@ let totalCount = 0;
 let totalPages = 1;
 let headerShown = false;
 let initialLoad = true;
+let cachedData = [];
 let timer;
 
 const $input = document.getElementById('searchInput');
@@ -214,7 +215,7 @@ function openDrawer(id) {
 
                 <div class="drawer__actions">
                     ${f.linkedInUrl ? `
-                    <a class="drawer__link" href="${f.linkedInUrl}" target="_blank" rel="noopener noreferrer">
+                    <a class="drawer__link" href="${f.linkedInUrl.startsWith('http') ? f.linkedInUrl : `https://${f.linkedInUrl}`}" target="_blank" rel="noopener noreferrer">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;">
                             <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/>
                             <rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
@@ -268,12 +269,7 @@ async function search(q = '*', p = 1) {
     initialLoad = false;
 
     try {
-        const params = new URLSearchParams({
-            query,
-            page,
-            limit: LIMIT,
-            sort: sortOrder
-        });
+        const params = new URLSearchParams({ query, page, limit: LIMIT, ...(sortOrder && { sort: sortOrder }) });
         const res = await fetch(`/api/freelances?${params}`);
         if (!res.ok) throw new Error(res.status);
 
@@ -281,6 +277,7 @@ async function search(q = '*', p = 1) {
         totalPages = parseInt(res.headers.get('X-Total-Pages') ?? '1', 10);
 
         const data = await res.json();
+        cachedData = data;
 
         if (!data.length) {
             renderEmpty(query);

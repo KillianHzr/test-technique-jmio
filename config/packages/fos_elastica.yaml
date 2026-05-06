@@ -11,8 +11,16 @@ fos_elastica:
                 model: App\Entity\FreelanceConso
                 provider: ~
             properties:
-                firstName: ~
-                lastName: ~
+                firstName:
+                    type: text
+                    fields:
+                        keyword:
+                            type: keyword
+                lastName:
+                    type: text
+                    fields:
+                        keyword:
+                            type: keyword
                 jobTitle: ~
                 linkedInUrl: ~
                 fullName: ~
