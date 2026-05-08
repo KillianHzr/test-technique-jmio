@@ -28,29 +28,35 @@ const $drawerOverlay = document.getElementById('drawerOverlay');
 const $searchTip = document.getElementById('searchTip');
 
 function calculateLimit() {
-    if (window.innerWidth <= 1100) return 12;
-    
     const scrollZone = document.querySelector('.main-view__scroll-zone');
     if (!scrollZone) return 12;
 
     const style = window.getComputedStyle(scrollZone);
     const paddingLeft = parseFloat(style.paddingLeft) || 0;
     const paddingRight = parseFloat(style.paddingRight) || 0;
-    const paddingTop = parseFloat(style.paddingTop) || 0;
-    const paddingBottom = parseFloat(style.paddingBottom) || 0;
-
     const availableWidth = scrollZone.clientWidth - paddingLeft - paddingRight;
-    const availableHeight = scrollZone.clientHeight - paddingTop - paddingBottom;
-
-    const minCardW = 95;
-    const gapCol = 16;
     
-    const cardH = 180;
-    const gapRow = 32;
+    let minCardW, gapCol, rows;
+
+    if (window.innerWidth <= 640) {
+        return 3 * 4;
+    } else if (window.innerWidth <= 1100) {
+        minCardW = 85;
+        gapCol = 12;
+        rows = 4;
+    } else {
+        minCardW = 95;
+        gapCol = 16;
+        const paddingTop = parseFloat(style.paddingTop) || 0;
+        const paddingBottom = parseFloat(style.paddingBottom) || 0;
+        const availableHeight = scrollZone.clientHeight - paddingTop - paddingBottom;
+        const cardH = 180;
+        const gapRow = 32;
+        rows = Math.floor((availableHeight + gapRow) / (cardH + gapRow));
+        rows = Math.max(rows, 1);
+    }
 
     const cols = Math.floor((availableWidth + gapCol) / (minCardW + gapCol));
-    const rows = Math.floor((availableHeight + gapRow) / (cardH + gapRow));
-
     const calculated = cols * rows;
     return Math.max(calculated, 4);
 }
