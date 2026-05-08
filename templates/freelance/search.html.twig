@@ -92,6 +92,23 @@
 
         {% include 'components/molecules/drawer.html.twig' %}
         {% include 'components/molecules/context_menu.html.twig' %}
+
+        <div class="compare-bar" id="compareBar">
+            <div class="compare-bar__inner">
+                <div class="compare-items" id="compareItems"></div>
+                <button class="btn-compare-start" id="btnLaunchCompare">COMPARER (<span id="compareCount">0</span>)</button>
+                <button class="btn-compare-clear" id="btnClearCompare">ANNULER</button>
+            </div>
+        </div>
+
+        <div class="compare-modal" id="compareModal" aria-hidden="true">
+            <div class="compare-modal__overlay" id="compareModalOverlay"></div>
+            <div class="compare-modal__content">
+                <button class="compare-modal__close" id="compareModalClose">×</button>
+                <h2 class="compare-modal__title">Comparaison des talents</h2>
+                <div class="compare-grid" id="compareGrid"></div>
+            </div>
+        </div>
     </div>
 {% endblock %}
 

@@ -37,6 +37,12 @@ readonly class FreelanceConsolider
         $freelanceConso->setLinkedInUrl($this->getLinkedInUrl($freelance));
         $freelanceConso->setJobTitle($this->getJobTitle($freelance));
 
+        $jobTitle = $freelanceConso->getJobTitle() ?? 'Freelance';
+        $firstName = $freelanceConso->getFirstName() ?? 'Ce freelance';
+        
+        $freelanceConso->setSkills($this->generateSkills($jobTitle));
+        $freelanceConso->setBio($this->generateBio($firstName, $jobTitle));
+
         $this->entityManager->flush();
         $this->persister->replaceOne($freelanceConso);
 
@@ -123,5 +129,48 @@ readonly class FreelanceConsolider
         });
 
         return array_shift($jobTitles);
+    }
+
+    private function generateSkills(string $jobTitle): array
+    {
+        $jobTitle = strtolower($jobTitle);
+        $skills = ['Freelance'];
+
+        if (str_contains($jobTitle, 'frontend') || str_contains($jobTitle, 'front-end') || str_contains($jobTitle, 'front')) {
+            $skills = array_merge($skills, ['React', 'Vue.js', 'TypeScript', 'CSS/Tailwind', 'Next.js']);
+        } 
+        elseif (str_contains($jobTitle, 'backend') || str_contains($jobTitle, 'back-end') || str_contains($jobTitle, 'php')) {
+            $skills = array_merge($skills, ['PHP', 'Symfony', 'Laravel', 'PostgreSQL', 'Redis']);
+        }
+        elseif (str_contains($jobTitle, 'analyste') || str_contains($jobTitle, 'logiciel') || str_contains($jobTitle, 'programmeur')) {
+            $skills = array_merge($skills, ['Java', 'C#', 'SQL Architecture', 'UML', 'Algorithmie']);
+        }
+        elseif (str_contains($jobTitle, 'data') || str_contains($jobTitle, 'scient')) {
+            $skills = array_merge($skills, ['Python', 'SQL', 'Machine Learning', 'Pandas', 'Spark']);
+        }
+        elseif (str_contains($jobTitle, 'devops') || str_contains($jobTitle, 'système') || str_contains($jobTitle, 'admin') || str_contains($jobTitle, 'cloud')) {
+            $skills = array_merge($skills, ['Docker', 'Kubernetes', 'CI/CD', 'Linux', 'AWS/Azure']);
+        }
+        // Architect
+        elseif (str_contains($jobTitle, 'architecte')) {
+            $skills = array_merge($skills, ['Design Patterns', 'Microservices', 'Cloud Architecture', 'Scalability', 'Go']);
+        }
+        elseif (str_contains($jobTitle, 'projet') || str_contains($jobTitle, 'consultant')) {
+            $skills = array_merge($skills, ['Agile', 'Scrum', 'Management', 'Product Strategy']);
+        }
+        elseif (str_contains($jobTitle, 'développeur') || str_contains($jobTitle, 'web')) {
+            $skills = array_merge($skills, ['JavaScript', 'HTML/CSS', 'Git', 'Node.js', 'API REST']);
+        }
+
+        return array_values(array_unique($skills));
+    }
+
+    private function generateBio(string $firstName, string $jobTitle): string
+    {
+        return sprintf(
+            "%s est un expert passionné spécialisé en tant que %s. Avec une solide expérience dans l'écosystème tech, il accompagne les entreprises dans leurs défis technologiques les plus complexes en apportant rigueur et innovation.",
+            $firstName,
+            $jobTitle
+        );
     }
 }

@@ -7,6 +7,7 @@ use Elastica\Query\BoolQuery;
 use Elastica\Query\MatchAll;
 use Elastica\Query\MultiMatch;
 use Elastica\Query\Prefix;
+use Elastica\Query\MoreLikeThis;
 use FOS\ElasticaBundle\Finder\PaginatedFinderInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
@@ -97,6 +98,20 @@ readonly class FreelanceSearchService
         }
 
         return '';
+    }
+
+    public function getMatchingFreelances(int $id, int $limit = 3): array
+    {
+        $mlt = new MoreLikeThis();
+        $mlt->setFields(['jobTitle', 'skills']);
+        $mlt->setLike(['_id' => (string) $id]);
+        $mlt->setMinTermFrequency(1);
+        $mlt->setMinDocFrequency(1);
+
+        $query = new Query($mlt);
+        $query->setSize($limit);
+
+        return $this->freelanceFinder->find($query);
     }
 
     private function buildQuery(string $query): Query

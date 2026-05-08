@@ -38,6 +38,14 @@ class FreelanceConso
     #[Groups(['freelance_detail'])]
     private ?string $fullName = null;
 
+    #[ORM\Column(type: 'json', nullable: true)]
+    #[Groups(['freelance_detail', 'freelance_conso'])]
+    private array $skills = [];
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['freelance_detail'])]
+    private ?string $bio = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -111,6 +119,30 @@ class FreelanceConso
     public function setFullName(?string $fullName): static
     {
         $this->fullName = $fullName;
+
+        return $this;
+    }
+
+    public function getSkills(): array
+    {
+        return $this->skills;
+    }
+
+    public function setSkills(?array $skills): static
+    {
+        $this->skills = $skills ?? [];
+
+        return $this;
+    }
+
+    public function getBio(): ?string
+    {
+        return $this->bio;
+    }
+
+    public function setBio(?string $bio): static
+    {
+        $this->bio = $bio;
 
         return $this;
     }

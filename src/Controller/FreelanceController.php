@@ -47,6 +47,22 @@ class FreelanceController extends AbstractController
         return $this->json(['suggestion' => $suggestion]);
     }
 
+    #[Route('/{id}/matching', name: 'matching', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function matching(int $id): Response
+    {
+        try {
+            $results = $this->freelanceSearchService->getMatchingFreelances($id);
+            $json = $this->freelanceSerializer->serializeFreelancesConso($results, ['freelance_conso']);
+
+            return new Response($json, Response::HTTP_OK, ['Content-Type' => 'application/json']);
+        } catch (\Exception $e) {
+            return $this->json([
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     #[Route('/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function detail(int $id): Response
     {

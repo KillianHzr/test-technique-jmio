@@ -29,6 +29,7 @@ const $searchTip = document.getElementById('searchTip');
 const $suggestion = document.getElementById('searchSuggestion');
 
 let currentSuggestion = '';
+let compareList = new Map();
 
 function calculateLimit() {
     const scrollZone = document.querySelector('.main-view__scroll-zone');
@@ -229,18 +230,22 @@ function openDrawer(id) {
             const href = f.linkedInUrl
                 ? (f.linkedInUrl.startsWith('http') ? f.linkedInUrl : `https://${f.linkedInUrl}`)
                 : null;
+            
+            const isComparing = compareList.has(f.id);
+            const userInitials = initials(f.firstName, f.lastName);
 
             gsap.to($drawerBody, {
                 opacity: 0, duration: 0.15,
                 onComplete: () => {
                     $drawerBody.innerHTML = `
-                        <div class="drawer__initials">${initials(f.firstName, f.lastName)}</div>
+                        <div class="drawer__initials">${userInitials}</div>
                         <p class="drawer__name">${name}</p>
                         <p class="drawer__job">${f.jobTitle ?? 'Freelance'}</p>
                         <div class="drawer__content">
-                            <p>Expert passionné avec plus de 5 ans d'expérience dans l'écosystème tech. Spécialisé dans la résolution de problèmes complexes et l'optimisation de performances, ${f.firstName || 'ce profil'} accompagne les entreprises dans leur transformation digitale.</p>
+                            <p>${f.bio || "Expert passionné avec plus de 5 ans d'expérience dans l'écosystème tech."}</p>
                         </div>
                         <div class="drawer__actions">
+                            <div class="compare-tip" id="compareTip">Maximum 3 profils</div>
                             ${href ? `
                             <a class="drawer__link" href="${href}" target="_blank" rel="noopener noreferrer">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;">
@@ -250,20 +255,149 @@ function openDrawer(id) {
                                 PROFIL LINKEDIN
                             </a>` : ''}
                             <button class="btn-recruit">Recruter ce talent</button>
+                            <button class="btn-compare ${isComparing ? 'active' : ''}" id="btnCompare">${isComparing ? 'Retirer du comparateur' : 'Comparer ce profil'}</button>
+                        </div>
+                        <div class="drawer__matching">
+                            <p class="matching-label">PROFILS SIMILAIRES</p>
+                            <div class="matching-grid" id="matchingGrid">
+                                <div class="sk sk--name" style="grid-column: 1/-1; height: 40px;"></div>
+                            </div>
                         </div>
                     `;
                     gsap.fromTo($drawerBody,
                         { opacity: 0 },
                         { opacity: 1, duration: 0.2 }
                     );
-                    gsap.from(Array.from($drawerBody.children), {
-                        y: 14, opacity: 0, stagger: 0.07, duration: 0.55, ease: 'expo.out'
-                    });
+
+                    document.getElementById('btnCompare').onclick = () => toggleCompare(f);
+
+                    fetch(`/api/freelances/${f.id}/matching`)
+                        .then(r => r.json())
+                        .then(matches => {
+                            const $mGrid = document.getElementById('matchingGrid');
+                            if (!$mGrid) return;
+                            $mGrid.innerHTML = matches.map(m => `
+                                <div class="match-card" onclick="openDrawer(${m.id})">
+                                    <div class="match-card__circle">${initials(m.firstName, m.lastName)}</div>
+                                    <p class="match-card__name">${m.firstName} ${m.lastName}</p>
+                                </div>
+                            `).join('');
+                        });
                 }
             });
         })
         .catch(() => closeDrawer());
 }
+
+let compareTipTimer;
+function showCompareTip() {
+    const $tip = document.getElementById('compareTip');
+    if (!$tip) return;
+    $tip.classList.add('compare-tip--show');
+    clearTimeout(compareTipTimer);
+    compareTipTimer = setTimeout(() => $tip.classList.remove('compare-tip--show'), 2800);
+}
+
+function toggleCompare(freelance) {
+    if (compareList.has(freelance.id)) {
+        compareList.delete(freelance.id);
+    } else {
+        if (compareList.size >= 3) {
+            showCompareTip();
+            return;
+        }
+        compareList.set(freelance.id, {
+            id: freelance.id,
+            initials: initials(freelance.firstName, freelance.lastName)
+        });
+        closeDrawer(); 
+    }
+    updateCompareBar();
+    const $btn = document.getElementById('btnCompare');
+    if ($btn) {
+        const active = compareList.has(freelance.id);
+        $btn.classList.toggle('active', active);
+        $btn.textContent = active ? 'Retirer du comparateur' : 'Comparer ce profil';
+    }
+}
+
+function updateCompareBar() {
+    const $bar = document.getElementById('compareBar');
+    const $items = document.getElementById('compareItems');
+    const $count = document.getElementById('compareCount');
+    if (compareList.size === 0) {
+        $bar.classList.remove('compare-bar--show');
+        return;
+    }
+    $bar.classList.add('compare-bar--show');
+    $count.textContent = compareList.size;
+    $items.innerHTML = Array.from(compareList.values()).map(f => `
+        <div class="compare-item">${f.initials}</div>
+    `).join('');
+}
+
+document.getElementById('btnClearCompare').onclick = () => {
+    compareList.clear();
+    updateCompareBar();
+    const $btn = document.getElementById('btnCompare');
+    if ($btn) {
+        $btn.classList.remove('active');
+        $btn.textContent = 'Comparer ce profil';
+    }
+};
+
+document.getElementById('btnLaunchCompare').onclick = async () => {
+    const $modal = document.getElementById('compareModal');
+    const $grid = document.getElementById('compareGrid');
+    $grid.innerHTML = '<p style="padding:40px;text-align:center;grid-column:1/-1;">Chargement de l\'analyse comparative...</p>';
+    $modal.setAttribute('aria-hidden', 'false');
+    
+    const ids = Array.from(compareList.keys());
+    const results = await Promise.all(ids.map(id => fetch(`/api/freelances/${id}`).then(r => r.json())));
+    const freelances = results.map(data => Array.isArray(data) ? data[0] : data);
+    
+    const allSkills = Array.from(new Set(freelances.flatMap(f => f.skills || []))).sort();
+    
+    $grid.innerHTML = freelances.map(f => {
+        const hasSkill = (s) => (f.skills || []).includes(s);
+        
+        return `
+            <div class="compare-card ${compareList.size > 1 ? 'compare-card--highlight' : ''}">
+                <div class="compare-card__header">
+                    <div class="compare-card__circle">${initials(f.firstName, f.lastName)}</div>
+                    <div>
+                        <p class="compare-card__name">${f.firstName} ${f.lastName}</p>
+                        <p class="compare-card__job">${f.jobTitle}</p>
+                    </div>
+                </div>
+                
+                <div class="compare-section">
+                    <p class="compare-section-title">Analyse des compétences</p>
+                    <div class="skill-list">
+                        ${allSkills.map(s => {
+                            const present = hasSkill(s);
+                            return `
+                                <div class="skill-item">
+                                    <div class="skill-icon ${present ? 'skill-icon--has' : 'skill-icon--miss'}">
+                                        ${present ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6L9 17l-5-5"/></svg>' : ''}
+                                    </div>
+                                    <span class="${present ? 'skill-text' : 'skill-text--miss'}">${s}</span>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+
+                <div class="compare-section">
+                    <p class="compare-section-title">Bio & Parcours</p>
+                    <p class="compare-card__bio">${f.bio || "Aucune description disponible."}</p>
+                </div>
+            </div>`;
+    }).join('');
+};
+
+document.getElementById('compareModalClose').onclick = () => document.getElementById('compareModal').setAttribute('aria-hidden', 'true');
+document.getElementById('compareModalOverlay').onclick = () => document.getElementById('compareModal').setAttribute('aria-hidden', 'true');
 
 function closeDrawer() {
     const tl = gsap.timeline({
