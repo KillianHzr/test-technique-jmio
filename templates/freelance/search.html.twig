@@ -8,13 +8,16 @@
             {% block sidebar_content %}
                 <div class="search-field-wrap">
                     <div class="results__field">
-                        <input
-                            type="text"
-                            class="results__input"
-                            id="searchInput"
-                            placeholder="Rechercher un Jean-Michel..."
-                            autocomplete="off"
-                        />
+                        <div class="autocomplete-wrapper">
+                            <input
+                                type="text"
+                                class="results__input"
+                                id="searchInput"
+                                placeholder="Rechercher un Jean-Michel..."
+                                autocomplete="off"
+                            />
+                            <span id="searchSuggestion" class="search-suggestion"></span>
+                        </div>
                         <button class="results__btn" id="searchBtn">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                                 <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>

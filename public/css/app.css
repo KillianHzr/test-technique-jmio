@@ -184,6 +184,25 @@ body {
     backdrop-filter: blur(10px);
 }
 
+.autocomplete-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.search-suggestion {
+    position: absolute;
+    left: 0;
+    pointer-events: none;
+    font-family: var(--font-main);
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.35);
+    white-space: pre;
+    z-index: 1;
+}
+
 .results__input {
     flex: 1;
     border: none;
@@ -193,6 +212,8 @@ body {
     font-size: 0.95rem;
     color: var(--white);
     background: transparent;
+    position: relative;
+    z-index: 2;
 }
 
 .results__input::placeholder {

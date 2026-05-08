@@ -6,6 +6,7 @@ use Elastica\Query;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\MatchAll;
 use Elastica\Query\MultiMatch;
+use Elastica\Query\Prefix;
 use FOS\ElasticaBundle\Finder\PaginatedFinderInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
@@ -46,6 +47,56 @@ readonly class FreelanceSearchService
             currentPage: $page,
             limit: $limit
         );
+    }
+
+    public function getAutocompleteSuggestion(string $query): string
+    {
+        $boolQuery = new BoolQuery();
+        
+        $prefixJob = new Prefix(['jobTitle' => strtolower($query)]);
+        $prefixFirst = new Prefix(['firstName' => strtolower($query)]);
+        $prefixLast = new Prefix(['lastName' => strtolower($query)]);
+        
+        $boolQuery->addShould($prefixJob);
+        $boolQuery->addShould($prefixFirst);
+        $boolQuery->addShould($prefixLast);
+        $boolQuery->setMinimumShouldMatch(1);
+
+        $elasticaQuery = new Query($boolQuery);
+        $elasticaQuery->setSize(1);
+
+        $results = $this->freelanceFinder->find($elasticaQuery);
+
+        if (empty($results)) {
+            return '';
+        }
+
+        /** @var \App\Entity\FreelanceConso $freelance */
+        $freelance = $results[0];
+
+        $firstName = $freelance->getFirstName();
+        $lastName  = $freelance->getLastName();
+        $jobTitle  = $freelance->getJobTitle();
+        $fullName  = trim(($firstName ?? '') . ' ' . ($lastName ?? ''));
+
+        if ($jobTitle && str_starts_with(strtolower($jobTitle), strtolower($query))) {
+            return $jobTitle;
+        }
+
+        if ($fullName && str_starts_with(strtolower($fullName), strtolower($query))) {
+            return $fullName;
+        }
+
+        if ($firstName && str_starts_with(strtolower($firstName), strtolower($query))) {
+            return $fullName;
+        }
+
+        $reverseFullName = trim(($lastName ?? '') . ' ' . ($firstName ?? ''));
+        if ($lastName && str_starts_with(strtolower($lastName), strtolower($query))) {
+            return $reverseFullName;
+        }
+
+        return '';
     }
 
     private function buildQuery(string $query): Query

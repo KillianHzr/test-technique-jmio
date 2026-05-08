@@ -26,6 +26,9 @@ const $drawerBody = document.getElementById('drawerBody');
 const $drawerClose = document.getElementById('drawerClose');
 const $drawerOverlay = document.getElementById('drawerOverlay');
 const $searchTip = document.getElementById('searchTip');
+const $suggestion = document.getElementById('searchSuggestion');
+
+let currentSuggestion = '';
 
 function calculateLimit() {
     const scrollZone = document.querySelector('.main-view__scroll-zone');
@@ -336,6 +339,8 @@ if ($btn && $input) {
         if ($input.value.trim().length === 1) { warnTooShort(); return; }
         setActiveFilter($input.value.trim());
         search($input.value.trim());
+        $suggestion.innerHTML = '';
+        currentSuggestion = '';
     });
 
     $input.addEventListener('keydown', e => {
@@ -343,17 +348,40 @@ if ($btn && $input) {
             if ($input.value.trim().length === 1) { warnTooShort(); return; }
             setActiveFilter($input.value.trim());
             search($input.value.trim());
+            $suggestion.innerHTML = '';
+            currentSuggestion = '';
+        }
+
+        if (e.key === 'Tab' && currentSuggestion) {
+            e.preventDefault();
+            $input.value = currentSuggestion;
+            $suggestion.innerHTML = '';
+            currentSuggestion = '';
         }
     });
 
     $input.addEventListener('input', () => {
+        const val = $input.value;
+        $suggestion.innerHTML = '';
+        currentSuggestion = '';
+
         clearTimeout(timer);
-        timer = setTimeout(() => {
-            if ($input.value.length >= 2 || $input.value === '') {
-                setActiveFilter($input.value.trim());
-                search($input.value.trim());
+        timer = setTimeout(async () => {
+            if (val.length >= 2) {
+                try {
+                    const res = await fetch(`/api/freelances/autocomplete?q=${encodeURIComponent(val)}`);
+                    const data = await res.json();
+                    if (data.suggestion && data.suggestion.toLowerCase().startsWith(val.toLowerCase())) {
+                        currentSuggestion = data.suggestion;
+                        const typedPart = val;
+                        const suggestionPart = data.suggestion.substring(val.length);
+                        $suggestion.innerHTML = `<span style="opacity:0">${typedPart}</span>${suggestionPart}`;
+                    }
+                } catch (e) {
+                    console.error('Autocomplete error:', e);
+                }
             }
-        }, 380);
+        }, 100);
     });
 }
 

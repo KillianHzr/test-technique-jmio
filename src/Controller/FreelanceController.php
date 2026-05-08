@@ -34,6 +34,19 @@ class FreelanceController extends AbstractController
         ]);
     }
 
+    #[Route('/autocomplete', name: 'autocomplete', methods: ['GET'])]
+    public function autocomplete(\Symfony\Component\HttpFoundation\Request $request): Response
+    {
+        $query = $request->query->get('q', '');
+        if (strlen($query) < 2) {
+            return $this->json(['suggestion' => '']);
+        }
+
+        $suggestion = $this->freelanceSearchService->getAutocompleteSuggestion($query);
+
+        return $this->json(['suggestion' => $suggestion]);
+    }
+
     #[Route('/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function detail(int $id): Response
     {
