@@ -1,0 +1,20 @@
+<aside class="sidebar">
+    <div class="sidebar__inner">
+        <nav class="nav">
+            <div class="nav-logo">
+                {% include 'components/atoms/logo.html.twig' %}
+            </div>
+        </nav>
+        
+        <div class="hero-mini">
+            <span class="hero-eyebrow">{{ hero_eyebrow|default('JEAN-MICHEL TROUVETOU') }}</span>
+            <h1 class="hero-title">{{ hero_title|default('Trouvez votre <strong>talent.</strong>')|raw }}</h1>
+        </div>
+
+        <div class="search-panel">
+            {% block sidebar_content %}{% endblock %}
+        </div>
+
+        {% include 'components/molecules/sidebar_footer.html.twig' %}
+    </div>
+</aside>

@@ -1,4 +1,4 @@
-const LIMIT = 30;
+let currentLimit = 12;
 let page = 1;
 let query = '*';
 let sortOrder = '';
@@ -27,6 +27,34 @@ const $drawerClose = document.getElementById('drawerClose');
 const $drawerOverlay = document.getElementById('drawerOverlay');
 const $searchTip = document.getElementById('searchTip');
 
+function calculateLimit() {
+    if (window.innerWidth <= 1100) return 12;
+    
+    const scrollZone = document.querySelector('.main-view__scroll-zone');
+    if (!scrollZone) return 12;
+
+    const style = window.getComputedStyle(scrollZone);
+    const paddingLeft = parseFloat(style.paddingLeft) || 0;
+    const paddingRight = parseFloat(style.paddingRight) || 0;
+    const paddingTop = parseFloat(style.paddingTop) || 0;
+    const paddingBottom = parseFloat(style.paddingBottom) || 0;
+
+    const availableWidth = scrollZone.clientWidth - paddingLeft - paddingRight;
+    const availableHeight = scrollZone.clientHeight - paddingTop - paddingBottom;
+
+    const minCardW = 95;
+    const gapCol = 16;
+    
+    const cardH = 180;
+    const gapRow = 32;
+
+    const cols = Math.floor((availableWidth + gapCol) / (minCardW + gapCol));
+    const rows = Math.floor((availableHeight + gapRow) / (cardH + gapRow));
+
+    const calculated = cols * rows;
+    return Math.max(calculated, 4);
+}
+
 function initials(first, last) {
     return ((first?.[0] ?? '') + (last?.[0] ?? '')).toUpperCase() || '?';
 }
@@ -44,7 +72,7 @@ function setActiveFilter(q) {
 function showSkeletons() {
     if (!$grid) return;
     $empty.style.display = 'none';
-    $grid.innerHTML = Array(LIMIT).fill('').map(() => `
+    $grid.innerHTML = Array(currentLimit).fill('').map(() => `
         <div class="av av--skeleton">
             <div class="av__circle sk--circle"></div>
             <div class="sk sk--name"></div>
@@ -260,7 +288,7 @@ async function search(q = '*', p = 1) {
     initialLoad = false;
 
     try {
-        const params = new URLSearchParams({ query, page, limit: LIMIT, ...(sortOrder && { sort: sortOrder }) });
+        const params = new URLSearchParams({ query, page, limit: currentLimit, ...(sortOrder && { sort: sortOrder }) });
         const res = await fetch(`/api/freelances?${params}`);
         if (!res.ok) throw new Error(res.status);
 
@@ -338,4 +366,17 @@ if ($sort) {
     });
 }
 
+let resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+        const newLimit = calculateLimit();
+        if (newLimit !== currentLimit) {
+            currentLimit = newLimit;
+            search(query, 1);
+        }
+    }, 250);
+});
+
+currentLimit = calculateLimit();
 search('*');

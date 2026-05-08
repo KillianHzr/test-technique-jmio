@@ -1,0 +1,13 @@
+<section class="doc-section">
+    <div class="doc-section__header">
+        <div class="doc-section__title-group">
+            <span class="doc-method-badge">{{ method|default('GET') }}</span>
+            <h3 class="hero-title" style="font-size: 20px; letter-spacing: 0;">{{ title }}</h3>
+        </div>
+        <code class="doc-endpoint-path">{{ path }}</code>
+    </div>
+
+    <div class="doc-content">
+        {% block endpoint_content %}{% endblock %}
+    </div>
+</section>

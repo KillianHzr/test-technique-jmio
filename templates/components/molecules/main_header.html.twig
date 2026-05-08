@@ -1,0 +1,8 @@
+<header class="main-view__header">
+    <div class="results__header" {% if id is defined %}id="{{ id }}"{% endif %}>
+        <span class="results__query" {% if query_id is defined %}id="{{ query_id }}"{% endif %}>{{ query_text }}</span>
+        {% if meta_text is defined or meta_id is defined %}
+            <span class="results__meta" {% if meta_id is defined %}id="{{ meta_id }}"{% endif %}>{{ meta_text|default('') }}</span>
+        {% endif %}
+    </div>
+</header>
