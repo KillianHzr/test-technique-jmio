@@ -15,6 +15,12 @@
             {% block sidebar_content %}{% endblock %}
         </div>
 
+        <div class="lang-switcher">
+            <a href="{{ path('change_locale', {'locale': 'fr'}) }}" class="lang-link {% if app.request.locale == 'fr' %}active{% endif %}">FR</a>
+            <span class="lang-sep">|</span>
+            <a href="{{ path('change_locale', {'locale': 'en'}) }}" class="lang-link {% if app.request.locale == 'en' %}active{% endif %}">EN</a>
+        </div>
+
         {% include 'components/molecules/sidebar_footer.html.twig' %}
     </div>
 </aside>

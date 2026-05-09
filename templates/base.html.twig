@@ -47,7 +47,17 @@
             'generic.loading': "{{ 'Chargement...'|trans|e('js') }}",
             'generic.all_freelances': "{{ 'Tous les freelances'|trans|e('js') }}",
             'generic.freelance': "{{ 'Freelance'|trans|e('js') }}",
-            'generic.results': "{{ '{count} résultat{plural}'|trans|e('js') }}"
+            'generic.results': "{{ '{count} résultat{plural}'|trans|e('js') }}",
+            'generic.close': "{{ 'Fermer'|trans|e('js') }}",
+            'generic.meta_text': "{{ 'La communauté freelance tech'|trans|e('js') }}",
+            'email.subject': "{{ 'email.subject'|trans|e('js') }}",
+            'email.body': "{{ 'email.body_content'|trans|e('js') }}",
+            'toast.link_copied': "{{ 'Lien copié dans le presse-papiers'|trans|e('js') }}",
+            'toast.exit_refused': "{{ 'Jean-Michel refuse de fermer.'|trans|e('js') }}",
+            'context.inspect_page': "{{ 'Inspecter la page'|trans|e('js') }}",
+            'context.recruit': "{{ 'Recruter un Jean-Michel'|trans|e('js') }}",
+            'context.share': "{{ 'Partager le lien'|trans|e('js') }}",
+            'context.exit': "{{ 'Quitter le site'|trans|e('js') }}"
         };
         function trans(key, params = {}) {
             let msg = window.I18N[key] || key;

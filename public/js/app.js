@@ -185,10 +185,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // MARQUEE
     const track = document.getElementById('marquee-track');
     if (track) {
-        gsap.to('.marquee-track', {
-            xPercent: -50,
+        gsap.to(track, {
+            xPercent: -25,
             ease: 'none',
-            duration: 20,
+            duration: 10,
             repeat: -1
         });
     }
@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     el.innerHTML = `
                         <div class="source-viewer__bar">
                             <span class="source-viewer__url">${location.href}</span>
-                            <button class="source-viewer__close">Fermer <kbd>Esc</kbd></button>
+                            <button class="source-viewer__close">${trans('generic.close')} <kbd>Esc</kbd></button>
                         </div>
                         <pre class="source-viewer__pre"><code>${lines}</code></pre>
                     `;
@@ -265,21 +265,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         },
         'recruteur': () => {
-            const subject = encodeURIComponent('Je veux recruter un Jean-Michel');
-            const body    = encodeURIComponent('Bonjour Killian,\n\nJ\'ai trouvé votre plateforme et je cherche un freelance tech de qualité.\n\nPouvez-vous m\'aider ?\n\nCordialement');
+            const subject = encodeURIComponent(trans('email.subject'));
+            const body    = encodeURIComponent(trans('email.body'));
             window.location.href = `mailto:killianherzer@gmail.com?subject=${subject}&body=${body}`;
         },
         'partageur': () => {
             const url = window.location.href;
             if (navigator.share) {
-                navigator.share({ title: 'jean-michel.io', text: 'La communauté freelance tech', url });
+                navigator.share({ title: 'jean-michel.io', text: trans('generic.meta_text'), url });
             } else {
-                navigator.clipboard.writeText(url).then(() => showToast('Lien copié dans le presse-papiers'));
+                navigator.clipboard.writeText(url).then(() => showToast(trans('toast.link_copied')));
             }
         },
         'quitter': () => {
             window.close();
-            setTimeout(() => showToast('Jean-Michel refuse de fermer.'), 400);
+            setTimeout(() => showToast(trans('toast.exit_refused')), 400);
         },
     };
 

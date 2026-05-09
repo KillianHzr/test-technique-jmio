@@ -349,10 +349,17 @@ body {
     opacity: 0.5;
 }
 
+.marquee-track {
+    display: flex;
+    width: max-content;
+}
+
 .marquee-item {
     font-size: 0.65rem;
     font-weight: 800;
     text-transform: uppercase;
+    flex-shrink: 0;
+    padding-right: 40px;
 }
 
 .main-view {
@@ -1671,4 +1678,32 @@ body {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0);
+}
+
+.lang-switcher {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.lang-link {
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.lang-link:hover {
+    color: var(--white);
+}
+
+.lang-link.active {
+    color: var(--brand-dark);
+}
+
+.lang-sep {
+    color: rgba(255, 255, 255, 0.1);
 }

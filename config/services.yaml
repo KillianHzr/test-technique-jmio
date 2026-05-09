@@ -23,5 +23,9 @@ services:
             - '../src/Kernel.php'
             - '../src/Dto'
 
+    App\EventSubscriber\LocaleSubscriber:
+        arguments:
+            $defaultLocale: '%kernel.default_locale%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
