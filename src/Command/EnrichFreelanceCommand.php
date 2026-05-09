@@ -10,6 +10,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use Symfony\Contracts\Translation\TranslatorInterface;
+
 #[AsCommand(
     name: 'app:freelance:enrich',
     description: 'Enrich all freelances with skills and bio',
@@ -19,6 +21,7 @@ class EnrichFreelanceCommand extends Command
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly FreelanceConsolider $freelanceConsolider,
+        private readonly TranslatorInterface $translator,
     ) {
         parent::__construct();
     }
@@ -36,7 +39,7 @@ class EnrichFreelanceCommand extends Command
         }
 
         $io->progressFinish();
-        $io->success('All freelances have been enriched with skills and bio.');
+        $io->success($this->translator->trans('All freelances have been enriched with skills and bio.'));
 
         return Command::SUCCESS;
     }

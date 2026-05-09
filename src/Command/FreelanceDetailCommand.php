@@ -12,6 +12,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use Symfony\Contracts\Translation\TranslatorInterface;
+
 #[AsCommand(
     name: 'app:freelance:detail',
     description: 'Get freelance as Json',
@@ -20,7 +22,9 @@ class FreelanceDetailCommand extends Command
 {
     public function __construct(
         private readonly FreelanceSerializer $freelanceSerializer,
-        private readonly EntityManagerInterface $entityManager)
+        private readonly EntityManagerInterface $entityManager,
+        private readonly TranslatorInterface $translator,
+    )
     {
         parent::__construct();
     }
@@ -39,7 +43,7 @@ class FreelanceDetailCommand extends Command
 
         $freelance = $this->entityManager->getRepository(FreelanceConso::class)->find($freelanceId);
         if (!$freelance) {
-            $io->error('Freelance not found');
+            $io->error($this->translator->trans('Freelance not found'));
             return Command::FAILURE;
         }
 

@@ -13,7 +13,7 @@
                                 type="text"
                                 class="results__input"
                                 id="searchInput"
-                                placeholder="Rechercher un Jean-Michel..."
+                                placeholder="{{ 'Rechercher un Jean-Michel...'|trans }}"
                                 autocomplete="off"
                             />
                             <span id="searchSuggestion" class="search-suggestion"></span>
@@ -28,23 +28,23 @@
                 </div>
 
                 <div class="filter-group">
-                    <p class="filter-label">JEAN-MICHEL KATÉGORI</p>
+                    <p class="filter-label">{{ 'JEAN-MICHEL KATÉGORI'|trans }}</p>
                     <div class="results__filters">
-                        <button class="filter-tag active" data-query="">Tous</button>
-                        <button class="filter-tag" data-query="Développeur">Développeur</button>
-                        <button class="filter-tag" data-query="Data">Data</button>
-                        <button class="filter-tag" data-query="DevOps">DevOps</button>
-                        <button class="filter-tag" data-query="Architecte">Architecte</button>
+                        <button class="filter-tag active" data-query="">{{ 'Tous'|trans }}</button>
+                        <button class="filter-tag" data-query="Développeur">{{ 'Développeur'|trans }}</button>
+                        <button class="filter-tag" data-query="Data">{{ 'Data'|trans }}</button>
+                        <button class="filter-tag" data-query="DevOps">{{ 'DevOps'|trans }}</button>
+                        <button class="filter-tag" data-query="Architecte">{{ 'Architecte'|trans }}</button>
                     </div>
                 </div>
 
                 <div class="filter-group">
-                    <p class="filter-label">Trier les Jean-Michel</p>
+                    <p class="filter-label">{{ 'Trier les Jean-Michel'|trans }}</p>
                     <div class="results__sort-wrap">
                         <select id="sortSelect">
-                            <option value="">Pertinence</option>
-                            <option value="name_asc">Nom A → Z</option>
-                            <option value="name_desc">Nom Z → A</option>
+                            <option value="">{{ 'Pertinence'|trans }}</option>
+                            <option value="name_asc">{{ 'Nom A → Z'|trans }}</option>
+                            <option value="name_desc">{{ 'Nom Z → A'|trans }}</option>
                         </select>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
                             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                         </svg>
-                        DOCUMENTATION API
+                        {{ 'DOCUMENTATION API'|trans }}
                     </a>
                 </div>
             {% endblock %}
@@ -66,16 +66,16 @@
             {% include 'components/molecules/main_header.html.twig' with {
                 'id': 'resultsHeader',
                 'query_id': 'resultsQuery',
-                'query_text': 'Tous les freelances',
+                'query_text': 'Tous les freelances'|trans,
                 'meta_id': 'resultsMeta',
-                'meta_text': '0 freelance'
+                'meta_text': '0 freelance'|trans
             } %}
 
             <div class="main-view__scroll-zone">
                 <div class="results__empty" id="resultsEmpty">
                     <p class="results__empty-label">0</p>
-                    <p class="results__empty-title" id="resultsEmptyText">Aucun résultat</p>
-                    <span class="results__empty-sub">Essayez un autre terme.</span>
+                    <p class="results__empty-title" id="resultsEmptyText">{{ 'Aucun résultat'|trans }}</p>
+                    <span class="results__empty-sub">{{ 'Essayez un autre terme.'|trans }}</span>
                 </div>
 
                 <div class="results__grid" id="resultsGrid">
@@ -96,8 +96,8 @@
         <div class="compare-bar" id="compareBar">
             <div class="compare-bar__inner">
                 <div class="compare-items" id="compareItems"></div>
-                <button class="btn-compare-start" id="btnLaunchCompare">COMPARER (<span id="compareCount">0</span>)</button>
-                <button class="btn-compare-clear" id="btnClearCompare">ANNULER</button>
+                <button class="btn-compare-start" id="btnLaunchCompare">{{ 'COMPARER'|trans }} (<span id="compareCount">0</span>)</button>
+                <button class="btn-compare-clear" id="btnClearCompare">{{ 'ANNULER'|trans }}</button>
             </div>
         </div>
 
@@ -105,7 +105,7 @@
             <div class="compare-modal__overlay" id="compareModalOverlay"></div>
             <div class="compare-modal__content">
                 <button class="compare-modal__close" id="compareModalClose">×</button>
-                <h2 class="compare-modal__title">Comparaison des talents</h2>
+                <h2 class="compare-modal__title">{{ 'Comparaison des talents'|trans }}</h2>
                 <div class="compare-grid" id="compareGrid"></div>
             </div>
         </div>

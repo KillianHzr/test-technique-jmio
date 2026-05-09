@@ -1,26 +1,26 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}API Documentation — jean-michel.io{% endblock %}
+{% block title %}{{ 'API Documentation — jean-michel.io'|trans }}{% endblock %}
 
 {% block body %}
 <div class="app-shell app-shell--reverse">
     {% embed 'components/organisms/sidebar.html.twig' with {
-        'hero_eyebrow': 'DÉVELOPPEUR CENTER',
-        'hero_title': 'API <strong>Docs.</strong>'
+        'hero_eyebrow': 'DÉVELOPPEUR CENTER'|trans,
+        'hero_title': 'API <strong>Docs.</strong>'|trans
     } %}
         {% block sidebar_content %}
             <a href="{{ path('home') }}" class="btn-back-app">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <path d="M19 12H5M12 19l-7-7 7-7"/>
                 </svg>
-                RETOUR À L'APP
+                {{ "RETOUR À L'APP"|trans }}
             </a>
         {% endblock %}
     {% endembed %}
 
     <main class="main-view">
         {% include 'components/molecules/main_header.html.twig' with {
-            'query_text': "Documentation de l'API REST"
+            'query_text': "Documentation de l'API REST"|trans
         } %}
 
         <div class="main-view__scroll-zone main-view__scroll-zone--api">
@@ -29,38 +29,38 @@
                 <div class="doc-grid">
                     
                     {% embed 'components/organisms/api_endpoint.html.twig' with {
-                        'title': 'Recherche de freelances',
+                        'title': 'Recherche de freelances'|trans,
                         'path': '/api/freelances'
                     } %}
                         {% block endpoint_content %}
-                            <p class="doc-text">Cet endpoint permet de lister les freelances consolidés. Il utilise le moteur Elasticsearch pour offrir une recherche performante sur le nom et le titre de poste.</p>
+                            <p class="doc-text">{{ "Cet endpoint permet de lister les freelances consolidés. Il utilise le moteur Elasticsearch pour offrir une recherche performante sur le nom et le titre de poste."|trans }}</p>
                             
                             <div class="doc-two-cols">
                                 <div>
-                                    <h4 class="doc-label">Paramètres Query</h4>
+                                    <h4 class="doc-label">{{ 'Paramètres Query'|trans }}</h4>
                                     <ul class="doc-list">
                                         <li class="doc-list__item">
-                                            <strong class="color-dark">query</strong> <span class="color-muted-small">(string)</span> — Défaut: <code class="color-primary">*</code>
+                                            <strong class="color-dark">query</strong> <span class="color-muted-small">(string)</span> — {{ 'Défaut:'|trans }} <code class="color-primary">*</code>
                                         </li>
                                         <li class="doc-list__item">
-                                            <strong class="color-dark">page</strong> <span class="color-muted-small">(int)</span> — Défaut: <code class="color-primary">1</code>
+                                            <strong class="color-dark">page</strong> <span class="color-muted-small">(int)</span> — {{ 'Défaut:'|trans }} <code class="color-primary">1</code>
                                         </li>
                                         <li class="doc-list__item">
-                                            <strong class="color-dark">limit</strong> <span class="color-muted-small">(int)</span> — Défaut: <code class="color-primary">10</code>, Max: <code class="color-primary">100</code>
+                                            <strong class="color-dark">limit</strong> <span class="color-muted-small">(int)</span> — {{ 'Défaut:'|trans }} <code class="color-primary">10</code>, Max: <code class="color-primary">100</code>
                                         </li>
                                         <li class="doc-list__item">
-                                            <strong class="color-dark">sort</strong> <span class="color-muted-small">(string)</span> — Valeurs: <code class="color-primary">name_asc</code>, <code class="color-primary">name_desc</code>
+                                            <strong class="color-dark">sort</strong> <span class="color-muted-small">(string)</span> — {{ 'Valeurs:'|trans }} <code class="color-primary">name_asc</code>, <code class="color-primary">name_desc</code>
                                         </li>
                                     </ul>
                                 </div>
                                 <div>
-                                    <h4 class="doc-label">Format de réponse</h4>
+                                    <h4 class="doc-label">{{ 'Format de réponse'|trans }}</h4>
                                     <div class="doc-info-box">
-                                        Les métadonnées sont transmises via les headers HTTP :<br>
+                                        {{ 'Les métadonnées sont transmises via les headers HTTP :'|trans }}<br>
                                         <code class="display-block margin-top-8 color-dark">X-Total-Count: 154</code>
                                         <code class="display-block color-dark">X-Total-Pages: 16</code>
                                     </div>
-                                    <h4 class="doc-label">Exemple JSON</h4>
+                                    <h4 class="doc-label">{{ 'Exemple JSON'|trans }}</h4>
                                     <pre class="doc-code-block">[
   {
     "id": 1,
@@ -77,22 +77,22 @@
                     {% endembed %}
 
                     {% embed 'components/organisms/api_endpoint.html.twig' with {
-                        'title': "Détail d'un freelance",
+                        'title': "Détail d'un freelance"|trans,
                         'path': '/api/freelances/{id}'
                     } %}
                         {% block endpoint_content %}
                             <div class="doc-two-cols">
                                 <div>
-                                    <p class="doc-text">Retourne les données consolidées complètes pour un identifiant unique donné.</p>
+                                    <p class="doc-text">{{ "Retourne les données consolidées complètes pour un identifiant unique donné."|trans }}</p>
                                     
-                                    <h4 class="doc-label">Codes de retour</h4>
+                                    <h4 class="doc-label">{{ 'Codes de retour'|trans }}</h4>
                                     <div class="doc-badge-group">
                                         <span class="doc-badge doc-badge--success">200 OK</span>
                                         <span class="doc-badge doc-badge--error">404 Not Found</span>
                                     </div>
                                 </div>
                                 <div>
-                                    <h4 class="doc-label">Exemple JSON</h4>
+                                    <h4 class="doc-label">{{ 'Exemple JSON'|trans }}</h4>
                                     <pre class="doc-code-block">{
   "id": 42,
   "firstName": "Hugo",

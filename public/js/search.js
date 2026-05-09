@@ -103,12 +103,12 @@ function applySort(data) {
 
 function renderEmpty(q) {
     if ($header) $header.style.display = 'flex';
-    if ($queryEl) $queryEl.textContent = q || 'Recherche';
-    if ($meta) $meta.textContent = `0 résultat`;
+    if ($queryEl) $queryEl.textContent = q || trans('generic.search');
+    if ($meta) $meta.textContent = trans('generic.results', {count: 0, plural: ''});
     if ($empty) $empty.style.display = 'flex';
     if ($grid) $grid.innerHTML = '';
     headerShown = true;
-    if ($emptyText) $emptyText.textContent = `Aucun résultat pour « ${q} »`;
+    if ($emptyText) $emptyText.textContent = trans('search.no_results', {query: q});
     if ($empty) gsap.from($empty, {
         opacity: 0,
         y: 10,
@@ -143,17 +143,22 @@ function renderCards(data) {
     if ($header) $header.style.display = 'flex';
     headerShown = true;
 
-    if ($queryEl) $queryEl.textContent = query === '*' ? 'Tous les freelances' : query;
-    if ($meta) $meta.textContent = `${totalCount} freelance${totalCount > 1 ? 's' : ''} · Page ${page}/${totalPages}`;
+    if ($queryEl) $queryEl.textContent = query === '*' ? trans('generic.all_freelances') : query;
+    if ($meta) $meta.textContent = trans('search.total_count', {
+        count: totalCount,
+        plural: totalCount > 1 ? 's' : '',
+        page: page,
+        total: totalPages
+    });
 
     if ($grid) {
         $grid.innerHTML = data.map((f) => {
-            const name = [f.firstName, f.lastName].filter(Boolean).join(' ') || 'Anonyme';
+            const name = [f.firstName, f.lastName].filter(Boolean).join(' ') || trans('generic.anonymous');
             return `
             <article class="av" data-id="${f.id}">
                 <div class="av__circle">${initials(f.firstName, f.lastName)}</div>
                 <p class="av__name">${name}</p>
-                <p class="av__job">${f.jobTitle ?? 'Freelance'}</p>
+                <p class="av__job">${f.jobTitle ?? trans('generic.freelance')}</p>
             </article>`;
         }).join('');
 
@@ -226,7 +231,7 @@ function openDrawer(id) {
             const f = Array.isArray(data) ? data[0] : data;
             if (!f) { closeDrawer(); return; }
 
-            const name = [f.firstName, f.lastName].filter(Boolean).join(' ') || 'Anonyme';
+            const name = [f.firstName, f.lastName].filter(Boolean).join(' ') || trans('generic.anonymous');
             const href = f.linkedInUrl
                 ? (f.linkedInUrl.startsWith('http') ? f.linkedInUrl : `https://${f.linkedInUrl}`)
                 : null;
@@ -240,12 +245,12 @@ function openDrawer(id) {
                     $drawerBody.innerHTML = `
                         <div class="drawer__initials">${userInitials}</div>
                         <p class="drawer__name">${name}</p>
-                        <p class="drawer__job">${f.jobTitle ?? 'Freelance'}</p>
+                        <p class="drawer__job">${f.jobTitle ?? trans('generic.freelance')}</p>
                         <div class="drawer__content">
-                            <p>${f.bio || "Expert passionné avec plus de 5 ans d'expérience dans l'écosystème tech."}</p>
+                            <p>${f.bio || trans('compare.no_bio')}</p>
                         </div>
                         <div class="drawer__actions">
-                            <div class="compare-tip" id="compareTip">Maximum 3 profils</div>
+                            <div class="compare-tip" id="compareTip">${trans('compare.limit_reached')}</div>
                             ${href ? `
                             <a class="drawer__link" href="${href}" target="_blank" rel="noopener noreferrer">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;">
@@ -254,11 +259,11 @@ function openDrawer(id) {
                                 </svg>
                                 PROFIL LINKEDIN
                             </a>` : ''}
-                            <button class="btn-recruit">Recruter ce talent</button>
-                            <button class="btn-compare ${isComparing ? 'active' : ''}" id="btnCompare">${isComparing ? 'Retirer du comparateur' : 'Comparer ce profil'}</button>
+                            <button class="btn-recruit">${trans('drawer.recruit')}</button>
+                            <button class="btn-compare ${isComparing ? 'active' : ''}" id="btnCompare">${isComparing ? trans('drawer.compare_remove') : trans('drawer.compare_add')}</button>
                         </div>
                         <div class="drawer__matching">
-                            <p class="matching-label">PROFILS SIMILAIRES</p>
+                            <p class="matching-label">${trans('drawer.matching_label')}</p>
                             <div class="matching-grid" id="matchingGrid">
                                 <div class="sk sk--name" style="grid-column: 1/-1; height: 40px;"></div>
                             </div>
@@ -317,7 +322,7 @@ function toggleCompare(freelance) {
     if ($btn) {
         const active = compareList.has(freelance.id);
         $btn.classList.toggle('active', active);
-        $btn.textContent = active ? 'Retirer du comparateur' : 'Comparer ce profil';
+        $btn.textContent = active ? trans('drawer.compare_remove') : trans('drawer.compare_add');
     }
 }
 
@@ -342,14 +347,14 @@ document.getElementById('btnClearCompare').onclick = () => {
     const $btn = document.getElementById('btnCompare');
     if ($btn) {
         $btn.classList.remove('active');
-        $btn.textContent = 'Comparer ce profil';
+        $btn.textContent = trans('drawer.compare_add');
     }
 };
 
 document.getElementById('btnLaunchCompare').onclick = async () => {
     const $modal = document.getElementById('compareModal');
     const $grid = document.getElementById('compareGrid');
-    $grid.innerHTML = '<p style="padding:40px;text-align:center;grid-column:1/-1;">Chargement de l\'analyse comparative...</p>';
+    $grid.innerHTML = `<p style="padding:40px;text-align:center;grid-column:1/-1;">${trans('compare.loading')}</p>`;
     $modal.setAttribute('aria-hidden', 'false');
     
     const ids = Array.from(compareList.keys());
@@ -372,7 +377,7 @@ document.getElementById('btnLaunchCompare').onclick = async () => {
                 </div>
                 
                 <div class="compare-section">
-                    <p class="compare-section-title">Analyse des compétences</p>
+                    <p class="compare-section-title">${trans('compare.section_skills')}</p>
                     <div class="skill-list">
                         ${allSkills.map(s => {
                             const present = hasSkill(s);
@@ -389,8 +394,8 @@ document.getElementById('btnLaunchCompare').onclick = async () => {
                 </div>
 
                 <div class="compare-section">
-                    <p class="compare-section-title">Bio & Parcours</p>
-                    <p class="compare-card__bio">${f.bio || "Aucune description disponible."}</p>
+                    <p class="compare-section-title">${trans('compare.section_bio')}</p>
+                    <p class="compare-card__bio">${f.bio || trans('compare.no_bio')}</p>
                 </div>
             </div>`;
     }).join('');

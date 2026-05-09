@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 
+use Symfony\Contracts\Translation\TranslatorInterface;
+
 #[Route('/api/freelances', name: 'api_freelance_')]
 class FreelanceController extends AbstractController
 {
@@ -19,6 +21,7 @@ class FreelanceController extends AbstractController
         private readonly FreelanceSearchService $freelanceSearchService,
         private readonly FreelanceSerializer $freelanceSerializer,
         private readonly EntityManagerInterface $entityManager,
+        private readonly TranslatorInterface $translator,
     ) {}
 
     #[Route('', name: 'search', methods: ['GET'])]
@@ -69,7 +72,7 @@ class FreelanceController extends AbstractController
         $freelance = $this->entityManager->getRepository(FreelanceConso::class)->find($id);
 
         if (!$freelance) {
-            return $this->json(['error' => 'Freelance not found'], Response::HTTP_NOT_FOUND);
+            return $this->json(['error' => $this->translator->trans('Freelance not found')], Response::HTTP_NOT_FOUND);
         }
 
         return new Response(
