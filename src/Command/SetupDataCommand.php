@@ -59,6 +59,10 @@ class SetupDataCommand extends Command
                 '--no-interaction' => true
             ]), $output);
 
+            $io->section('5. Creating demo user...');
+            $demoUserCmd = $application->find('app:create-demo-user');
+            $demoUserCmd->run(new ArrayInput([]), $output);
+
             $io->success('Data initialization complete! Your site is ready.');
         } catch (\Exception $e) {
             $io->error('An error occurred during setup: ' . $e->getMessage());
