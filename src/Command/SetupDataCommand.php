@@ -46,7 +46,7 @@ class SetupDataCommand extends Command
 
             $process = new \Symfony\Component\Process\Process([
                 'php', 'bin/console', 'messenger:consume', 'insert_async', 
-                '--limit=' . $totalMessages, '-vv'
+                '--limit=' . $totalMessages
             ]);
             $process->setTimeout(null);
             $process->run(function ($type, $buffer) use ($output) {
