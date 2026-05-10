@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'Mon Profil — jean-michel.io'|trans }}{% endblock %}
+
+{% block body %}
+<div class="app-shell">
+    <div class="profile-card">
+        <header class="profile-card__header">
+            <div class="profile-card__top">
+                <a href="{{ path('home') }}" class="btn-back-minimal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    {{ 'RETOUR'|trans }}
+                </a>
+                <div class="profile-card__badge">{{ 'RECRUTEUR CERTIFIÉ'|trans }}</div>
+            </div>
+            
+            <div class="profile-card__identity">
+                <div class="profile-card__avatar">
+                    {{ app.user.email|slice(0, 1)|upper }}
+                </div>
+                <div class="profile-card__info">
+                    <h1 class="profile-card__email">{{ app.user.email }}</h1>
+                    <p class="profile-card__company">{{ app.user.companyName }}</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="profile-card__content">
+            <section class="selection-box">
+                <div class="selection-box__header">
+                    <div class="header-with-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="icon-brand"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                        <h2 class="selection-box__title">{{ 'Ma Sélection de Talents'|trans }}</h2>
+                    </div>
+                    <span class="selection-box__count">{{ selection ? selection.freelances|length : 0 }} {{ 'profil(s) enregistré(s)'|trans }}</span>
+                </div>
+
+                <div class="selection-box__grid">
+                    {% if selection and selection.freelances|length > 0 %}
+                        {% for f in selection.freelances %}
+                            <div class="mini-talent-card" onclick="openDrawer({{ f.id }})">
+                                <div class="mini-talent-card__initials">
+                                    {{ f.firstName|slice(0, 1)|upper }}{{ f.lastName|slice(0, 1)|upper }}
+                                </div>
+                                <div class="mini-talent-card__body">
+                                    <p class="mini-talent-card__name">{{ f.firstName }} {{ f.lastName }}</p>
+                                    <p class="mini-talent-card__job">{{ f.jobTitle }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="selection-empty">
+                            <p>{{ 'Votre liste est encore vide.'|trans }}</p>
+                            <a href="{{ path('home') }}" class="btn-explore-link">{{ 'Découvrir des freelances'|trans }}</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+{% include 'components/molecules/drawer.html.twig' %}
+{% endblock %}
+
+{% block javascripts %}
+<script src="/js/search.js"></script>
+{% endblock %}
