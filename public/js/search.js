@@ -63,8 +63,7 @@ function renderSkillsList(filter = '') {
         
         return `
         <div class="skill-option ${selectedSkills.has(s.name) ? 'active' : ''} ${isDisabled ? 'disabled' : ''}" 
-             data-skill="${s.name}" 
-             ${isDisabled ? 'style="opacity:0.4;pointer-events:none;filter:grayscale(1)"' : ''}>
+             data-skill="${s.name}">
             <div class="skill-option__main">
                 <div class="skill-option__checkbox"></div>
                 <span>${s.name}</span>
@@ -202,7 +201,7 @@ function setActiveFilter(q) {
 
 function showSkeletons() {
     if (!isSearchPage || !$grid) return;
-    if ($empty) $empty.style.display = 'none';
+    if ($empty) $empty.classList.add('hidden');
     $grid.innerHTML = Array(currentLimit).fill('').map(() => `
         <div class="av av--skeleton">
             <div class="av__circle sk--circle"></div>
@@ -210,15 +209,19 @@ function showSkeletons() {
             <div class="sk sk--job"></div>
         </div>
     `).join('');
-    if (!headerShown && $header) $header.style.display = 'none';
+    if (!headerShown && $header) $header.classList.add('hidden');
 }
 
 function renderEmpty(q) {
     if (!isSearchPage) return;
-    if ($header) $header.style.display = 'flex';
+    if ($header) $header.classList.add('flex');
+    if ($header) $header.classList.remove('hidden');
     if ($queryEl) $queryEl.textContent = q || trans('generic.search');
     if ($meta) $meta.textContent = trans('generic.results', {count: 0, plural: ''});
-    if ($empty) $empty.style.display = 'flex';
+    if ($empty) {
+        $empty.classList.add('flex');
+        $empty.classList.remove('hidden');
+    }
     if ($grid) $grid.innerHTML = '';
     headerShown = true;
     if ($emptyText) $emptyText.textContent = trans('search.no_results', {query: q});
@@ -240,8 +243,14 @@ function animateCards() {
 
 function renderCards(data) {
     if (!isSearchPage) return;
-    if ($empty) $empty.style.display = 'none';
-    if ($header) $header.style.display = 'flex';
+    if ($empty) {
+        $empty.classList.add('hidden');
+        $empty.classList.remove('flex');
+    }
+    if ($header) {
+        $header.classList.add('flex');
+        $header.classList.remove('hidden');
+    }
     headerShown = true;
 
     if ($queryEl) $queryEl.textContent = query === '*' ? trans('generic.all_freelances') : query;
@@ -372,7 +381,7 @@ function openDrawer(id) {
                         </div>
                         <div class="drawer__matching">
                             <p class="matching-label">${trans('drawer.matching_label')}</p>
-                            <div class="matching-grid" id="matchingGrid"><div class="sk sk--name" style="grid-column: 1/-1; height: 40px;"></div></div>
+                            <div class="matching-grid" id="matchingGrid"><div class="sk sk--name sk-name-placeholder"></div></div>
                         </div>
                     `;
                     gsap.fromTo($drawerBody, { opacity: 0 }, { opacity: 1, duration: 0.2 });
@@ -472,7 +481,7 @@ if (document.getElementById('btnLaunchCompare')) {
         const $modal = document.getElementById('compareModal');
         const $grid = document.getElementById('compareGrid');
         if (!$modal || !$grid) return;
-        $grid.innerHTML = `<p style="padding:40px;text-align:center;grid-column:1/-1;">${trans('compare.loading')}</p>`;
+        $grid.innerHTML = `<p class="p-40-center grid-full-width">${trans('compare.loading')}</p>`;
         $modal.setAttribute('aria-hidden', 'false');
         
         const ids = Array.from(compareList.keys());
@@ -562,7 +571,7 @@ if ($btn && $input) {
                     const data = await res.json();
                     if (data.suggestion && data.suggestion.toLowerCase().startsWith(val.toLowerCase())) {
                         currentSuggestion = data.suggestion;
-                        if ($suggestion) $suggestion.innerHTML = `<span style="opacity:0">${val}</span>${data.suggestion.substring(val.length)}`;
+                        if ($suggestion) $suggestion.innerHTML = `<span class="suggestion-hidden-part">${val}</span>${data.suggestion.substring(val.length)}`;
                     }
                 } catch (e) { console.error('Autocomplete error:', e); }
             }
@@ -606,7 +615,7 @@ async function search(q = '*', p = 1) {
 
     } catch (e) {
         console.error(e);
-        if ($grid) $grid.innerHTML = `<p style="padding:60px;text-align:center;grid-column:1/-1;font-family:var(--font-main);font-weight:600;color:var(--brand-primary)">${trans('search.error')}</p>`;
+        if ($grid) $grid.innerHTML = `<p class="p-60-center-error grid-full-width">${trans('search.error')}</p>`;
     }
 }
 

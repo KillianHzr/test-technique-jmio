@@ -41,8 +41,6 @@
             'compare.limit_reached': "{{ 'Maximum 3 profils'|trans|e('js') }}",
             'compare.loading': "{{ 'Chargement de l\'analyse comparative...'|trans|e('js') }}",
             'compare.section_skills': "{{ 'Analyse des compétences'|trans|e('js') }}",
-            'compare.section_bio': "{{ 'Bio & Parcours'|trans|e('js') }}",
-            'compare.no_bio': "{{ 'Aucune description disponible.'|trans|e('js') }}",
             'generic.anonymous': "{{ 'Anonyme'|trans|e('js') }}",
             'generic.loading': "{{ 'Chargement...'|trans|e('js') }}",
             'generic.all_freelances': "{{ 'Tous les freelances'|trans|e('js') }}",
@@ -57,7 +55,14 @@
             'context.inspect_page': "{{ 'Inspecter la page'|trans|e('js') }}",
             'context.recruit': "{{ 'Recruter un Jean-Michel'|trans|e('js') }}",
             'context.share': "{{ 'Partager le lien'|trans|e('js') }}",
-            'context.exit': "{{ 'Quitter le site'|trans|e('js') }}"
+            'context.exit': "{{ 'Quitter le site'|trans|e('js') }}",
+            'selection.add': "{{ 'Ajouter à ma sélection'|trans|e('js') }}",
+            'selection.remove': "{{ 'Retirer de ma sélection'|trans|e('js') }}",
+            'selection.added': "{{ 'Profil ajouté !'|trans|e('js') }}"
+        };
+        window.APP_USER = {
+            'is_logged_in': {{ app.user ? 'true' : 'false' }},
+            'roles': {{ app.user ? app.user.roles|json_encode|raw : '[]' }}
         };
         function trans(key, params = {}) {
             let msg = window.I18N[key] || key;
