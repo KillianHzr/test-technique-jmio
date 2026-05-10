@@ -33,6 +33,7 @@ class ScrapJeanPaulCommand extends Command
 
         /** @var FreelanceJeanPaulDto $jeanPaulDto */
         foreach ($jeanPaulDtos as $jeanPaulDto) {
+            $io->writeln("Dispatching message for Jean-Paul profile...");
             $this->bus->dispatch(new InsertFreelanceJeanPaulMessage($jeanPaulDto));
         }
 
