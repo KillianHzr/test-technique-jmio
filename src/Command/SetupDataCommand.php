@@ -44,17 +44,14 @@ class SetupDataCommand extends Command
             $jeanPaulCount = count(json_decode(file_get_contents('./datas/jean-paul.json'), true));
             $totalMessages = $linkedInCount + $jeanPaulCount;
 
-            $consumeCmd = $application->find('messenger:consume');
-
-            if ($output->getVerbosity() < OutputInterface::VERBOSITY_VERY_VERBOSE) {
-                $output->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
-            }
-
-            $consumeCmd->run(new ArrayInput([
-                'receivers' => ['insert_async'],
-                '--limit' => $totalMessages,
-                '--no-interaction' => true
-            ]), $output);
+            $process = new \Symfony\Component\Process\Process([
+                'php', 'bin/console', 'messenger:consume', 'insert_async', 
+                '--limit=' . $totalMessages, '-vv'
+            ]);
+            $process->setTimeout(null);
+            $process->run(function ($type, $buffer) use ($output) {
+                $output->write($buffer);
+            });
 
             $io->section('4. Populating Elasticsearch index...');
             $populateCmd = $application->find('fos:elastica:populate');
