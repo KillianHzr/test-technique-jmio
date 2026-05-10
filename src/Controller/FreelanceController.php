@@ -27,8 +27,8 @@ class FreelanceController extends AbstractController
     #[Route('', name: 'search', methods: ['GET'])]
     public function search(#[MapQueryString] SearchFreelanceConsoDto $dto = new SearchFreelanceConsoDto()): Response
     {
-        $searchResult = $this->freelanceSearchService->searchFreelance($dto->query, $dto->page, $dto->limit, $dto->sort);
-        $json         = $this->freelanceSerializer->serializeFreelancesConso($searchResult->results, ['freelance_conso']);
+        $searchResult = $this->freelanceSearchService->searchFreelance($dto->query, $dto->page, $dto->limit, $dto->sort, $dto->skills);
+        $json         = $this->freelanceSerializer->serialize($searchResult, ['freelance_conso']);
 
         return new Response($json, Response::HTTP_OK, [
             'Content-Type'  => 'application/json',
@@ -37,11 +37,17 @@ class FreelanceController extends AbstractController
         ]);
     }
 
+    #[Route('/skills', name: 'skills', methods: ['GET'])]
+    public function skills(): Response
+    {
+        return $this->json($this->freelanceSearchService->getAllSkillsWithCounts());
+    }
+
     #[Route('/autocomplete', name: 'autocomplete', methods: ['GET'])]
     public function autocomplete(\Symfony\Component\HttpFoundation\Request $request): Response
     {
         $query = $request->query->get('q', '');
-        if (strlen($query) < 2) {
+        if (strlen($query) < 3) {
             return $this->json(['suggestion' => '']);
         }
 

@@ -33,6 +33,7 @@ readonly class InsertFreelanceJeanPaul
         $freelanceJeanPaul->setFirstName($dto->firstName);
         $freelanceJeanPaul->setLastName($dto->lastName);
         $freelanceJeanPaul->setJobTitle($dto->jobTitle);
+        $freelanceJeanPaul->setSkills($dto->skills);
 
         return $freelanceJeanPaul;
     }

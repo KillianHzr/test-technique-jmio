@@ -8,6 +8,8 @@ use Elastica\Query\MatchAll;
 use Elastica\Query\MultiMatch;
 use Elastica\Query\Prefix;
 use Elastica\Query\MoreLikeThis;
+use Elastica\Aggregation\Terms;
+use FOS\ElasticaBundle\Elastica\Index;
 use FOS\ElasticaBundle\Finder\PaginatedFinderInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
@@ -16,13 +18,20 @@ readonly class FreelanceSearchService
     public function __construct(
         #[Autowire(service: "fos_elastica.finder.freelance")]
         private PaginatedFinderInterface $freelanceFinder,
+        #[Autowire(service: "fos_elastica.index.freelance")]
+        private Index $freelanceIndex,
     )
     {
     }
 
-    public function searchFreelance(string $query, int $page = 1, int $limit = 10, ?string $sort = null): SearchResult
+    public function searchFreelance(string $query, int $page = 1, int $limit = 10, ?string $sort = null, array $skills = []): SearchResult
     {
-        $elasticaQuery = $this->buildQuery($query);
+        $elasticaQuery = $this->buildQuery($query, $skills);
+
+        $agg = new Terms('skills_facets');
+        $agg->setField('skills.keyword');
+        $agg->setSize(100);
+        $elasticaQuery->addAggregation($agg);
 
         if ($sort) {
             if ($sort === 'name_asc') {
@@ -41,12 +50,22 @@ readonly class FreelanceSearchService
             $results[] = $item;
         }
 
+        $adapter = $paginator->getAdapter();
+        $searchResponse = $this->freelanceIndex->search($elasticaQuery);
+        $buckets = $searchResponse->getAggregation('skills_facets')['buckets'] ?? [];
+        
+        $facets = [];
+        foreach ($buckets as $bucket) {
+            $facets[$bucket['key']] = $bucket['doc_count'];
+        }
+
         return new SearchResult(
             results: $results,
             total: $paginator->getNbResults(),
             pages: (int) ceil($paginator->getNbResults() / $limit),
             currentPage: $page,
-            limit: $limit
+            limit: $limit,
+            aggregations: $facets
         );
     }
 
@@ -114,27 +133,70 @@ readonly class FreelanceSearchService
         return $this->freelanceFinder->find($query);
     }
 
-    private function buildQuery(string $query): Query
+    public function getAllSkillsWithCounts(): array
     {
-        if ($query === '*') {
+        $query = new Query(new MatchAll());
+        $agg = new Terms('skills_agg');
+        $agg->setField('skills.keyword');
+        $agg->setSize(100);
+
+        $query->addAggregation($agg);
+        $query->setSize(0);
+
+        $results = $this->freelanceIndex->search($query);
+        $buckets = $results->getAggregation('skills_agg')['buckets'] ?? [];
+
+        $skills = [];
+        foreach ($buckets as $bucket) {
+            $skills[] = [
+                'name' => $bucket['key'],
+                'count' => $bucket['doc_count']
+            ];
+        }
+
+        usort($skills, fn($a, $b) => $b['count'] <=> $a['count']);
+
+        return $skills;
+    }
+
+    private function buildQuery(string $query, array $skills = []): Query
+    {
+        if ($query === '*' && empty($skills)) {
             return new Query(new MatchAll());
         }
 
-        $fuzzy = new MultiMatch();
-        $fuzzy->setQuery($query);
-        $fuzzy->setFields(['fullName^3', 'firstName^2', 'lastName^2', 'jobTitle^2', 'linkedInUrl']);
-        $fuzzy->setFuzziness('AUTO');
-        $fuzzy->setOperator(MultiMatch::OPERATOR_OR);
-
-        $ngram = new MultiMatch();
-        $ngram->setQuery($query);
-        $ngram->setFields(['fullName.ngram^3', 'firstName.ngram^2', 'lastName.ngram^2', 'jobTitle.ngram']);
-        $ngram->setOperator(MultiMatch::OPERATOR_OR);
-
         $bool = new BoolQuery();
-        $bool->addShould($fuzzy);
-        $bool->addShould($ngram);
-        $bool->setMinimumShouldMatch(1);
+
+        if ($query !== '*') {
+            $queryPart = new BoolQuery();
+            
+            $fuzzy = new MultiMatch();
+            $fuzzy->setQuery($query);
+            $fuzzy->setFields(['fullName^3', 'firstName^2', 'lastName^2', 'jobTitle^2', 'linkedInUrl', 'skills^2']);
+            $fuzzy->setFuzziness('AUTO');
+            $fuzzy->setOperator(MultiMatch::OPERATOR_AND);
+
+            $ngram = new MultiMatch();
+            $ngram->setQuery($query);
+            $ngram->setFields(['fullName.ngram^3', 'firstName.ngram^2', 'lastName.ngram^2', 'jobTitle.ngram', 'skills.ngram']);
+            $ngram->setOperator(MultiMatch::OPERATOR_AND);
+
+            $queryPart->addShould($fuzzy);
+            $queryPart->addShould($ngram);
+            $queryPart->setMinimumShouldMatch(1);
+            
+            $bool->addMust($queryPart);
+        }
+
+        if (!empty($skills)) {
+            $skillsPart = new BoolQuery();
+            foreach ($skills as $skill) {
+                $term = new Query\Term(['skills.keyword' => $skill]);
+                $skillsPart->addShould($term);
+            }
+            $skillsPart->setMinimumShouldMatch(1);
+            $bool->addMust($skillsPart);
+        }
 
         return new Query($bool);
     }

@@ -39,6 +39,29 @@
                 </div>
 
                 <div class="filter-group">
+                    <p class="filter-label">{{ 'COMPÉTENCES'|trans }}</p>
+                    <div class="skills-filter-wrap">
+                        <button class="btn-skills-trigger" id="btnSkillsToggle">
+                            <span id="selectedSkillsCount">0</span> {{ 'sélectionnée(s)'|trans }}
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        
+                        <div class="skills-popup" id="skillsPopup" aria-hidden="true">
+                            <div class="skills-popup__header">
+                                <input type="text" id="skillSearch" placeholder="{{ 'Filtrer...'|trans }}" />
+                            </div>
+                            <div class="skills-popup__list" id="skillsList">
+                                <!-- Dynamic skills here -->
+                            </div>
+                            <div class="skills-popup__footer">
+                                <button class="btn-clear-skills" id="btnClearSkills">{{ 'Réinitialiser'|trans }}</button>
+                                <button class="btn-apply-skills" id="btnApplySkills">{{ 'Appliquer'|trans }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-group">
                     <p class="filter-label">{{ 'Trier les Jean-Michel'|trans }}</p>
                     <div class="results__sort-wrap">
                         <select id="sortSelect">
@@ -47,16 +70,6 @@
                             <option value="name_desc">{{ 'Nom Z → A'|trans }}</option>
                         </select>
                     </div>
-                </div>
-
-                <div class="filter-group filter-group--api">
-                    <a href="{{ path('app_documentation_api') }}" class="btn-api-doc">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                        </svg>
-                        {{ 'DOCUMENTATION API'|trans }}
-                    </a>
                 </div>
             {% endblock %}
         {% endembed %}

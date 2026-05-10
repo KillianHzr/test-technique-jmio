@@ -40,7 +40,15 @@ readonly class FreelanceConsolider
         $jobTitle = $freelanceConso->getJobTitle() ?? 'Freelance';
         $firstName = $freelanceConso->getFirstName() ?? 'Ce freelance';
         
-        $freelanceConso->setSkills($this->generateSkills($jobTitle));
+        $skills = [];
+        foreach ($freelance->getFreelanceLinkedIns() as $linkedIn) {
+            $skills = array_merge($skills, $linkedIn->getSkills());
+        }
+        foreach ($freelance->getFreelanceJeanPauls() as $jeanPaul) {
+            $skills = array_merge($skills, $jeanPaul->getSkills());
+        }
+        $freelanceConso->setSkills(array_values(array_unique(array_filter($skills))));
+        
         $freelanceConso->setBio($this->generateBio($firstName, $jobTitle));
 
         $this->entityManager->flush();

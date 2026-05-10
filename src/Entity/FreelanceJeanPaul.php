@@ -34,6 +34,9 @@ class FreelanceJeanPaul
     #[ORM\Column]
     private ?int $jeanPaulId = null;
 
+    #[ORM\Column(type: 'json', nullable: true)]
+    private array $skills = [];
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private \DateTimeInterface $createdAt;
 
@@ -131,6 +134,18 @@ class FreelanceJeanPaul
     public function setUpdatedAt(?\DateTimeInterface $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getSkills(): array
+    {
+        return $this->skills;
+    }
+
+    public function setSkills(?array $skills): static
+    {
+        $this->skills = $skills ?? [];
 
         return $this;
     }

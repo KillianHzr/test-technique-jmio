@@ -13,5 +13,6 @@ class SearchFreelanceConsoDto
         #[Assert\Range(min: 1, max: 100)]
         public int $limit = 10,
         public ?string $sort = null,
+        public array $skills = []
     ) {}
 }

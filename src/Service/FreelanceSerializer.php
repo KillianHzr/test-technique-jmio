@@ -31,4 +31,9 @@ readonly class FreelanceSerializer
         }
         return $this->serializer->serialize($freelances, 'json', ['groups' => $groups]);
     }
+
+    public function serialize(mixed $data, array $groups): string
+    {
+        return $this->serializer->serialize($data, 'json', ['groups' => $groups]);
+    }
 }

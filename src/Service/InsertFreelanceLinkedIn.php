@@ -36,6 +36,7 @@ readonly class InsertFreelanceLinkedIn
         $freelanceLinkedIn->setFirstName($dto->firstName);
         $freelanceLinkedIn->setLastName($dto->lastName);
         $freelanceLinkedIn->setJobTitle($dto->jobTitle);
+        $freelanceLinkedIn->setSkills($dto->skills);
 
         return $freelanceLinkedIn;
     }

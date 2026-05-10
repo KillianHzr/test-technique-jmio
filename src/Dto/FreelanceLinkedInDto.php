@@ -17,6 +17,7 @@ class FreelanceLinkedInDto
         #[Assert\NotNull]
         public string $url,
         public ?string $jobTitle = null,
+        public array $skills = []
     )
     {
     }

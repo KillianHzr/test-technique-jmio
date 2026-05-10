@@ -40,6 +40,9 @@ class FreelanceLinkedIn
     #[ORM\Column(length: 255)]
     private ?string $url = null;
 
+    #[ORM\Column(type: 'json', nullable: true)]
+    private array $skills = [];
+
     public function getId(): ?int
     {
         return $this->id;
@@ -125,6 +128,18 @@ class FreelanceLinkedIn
     public function setUrl(string $url): static
     {
         $this->url = $url;
+
+        return $this;
+    }
+
+    public function getSkills(): array
+    {
+        return $this->skills;
+    }
+
+    public function setSkills(?array $skills): static
+    {
+        $this->skills = $skills ?? [];
 
         return $this;
     }

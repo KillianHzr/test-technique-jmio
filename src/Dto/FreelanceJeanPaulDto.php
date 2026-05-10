@@ -17,7 +17,8 @@ class FreelanceJeanPaulDto
         #[Assert\NotNull]
         public string $jobTitle,
         #[Assert\Type('integer')]
-        public int $jeanPaulId
+        public int $jeanPaulId,
+        public array $skills = []
     )
     {
     }

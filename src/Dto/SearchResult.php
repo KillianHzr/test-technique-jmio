@@ -12,10 +12,11 @@ readonly class SearchResult implements IteratorAggregate, Countable, JsonSeriali
 {
     public function __construct(
         public array $results,
-        public int   $total,
-        public int   $pages,
-        public int   $currentPage,
-        public int   $limit
+        public int $total,
+        public int $pages,
+        public int $currentPage,
+        public int $limit,
+        public array $aggregations = []
     )
     {
     }
@@ -27,10 +28,10 @@ readonly class SearchResult implements IteratorAggregate, Countable, JsonSeriali
 
     public function count(): int
     {
-        return count($this->results);
+        return $this->total;
     }
 
-    public function jsonSerialize(): array
+    public function jsonSerialize(): mixed
     {
         return [
             'results' => $this->results,
@@ -38,6 +39,7 @@ readonly class SearchResult implements IteratorAggregate, Countable, JsonSeriali
             'pages'   => $this->pages,
             'page'    => $this->currentPage,
             'limit'   => $this->limit,
+            'aggregations' => $this->aggregations,
         ];
     }
 }
