@@ -25,6 +25,10 @@ class SetupDataCommand extends Command
         $io->title('Starting full data initialization...');
 
         try {
+            $io->section('0. Configuring Messenger transports (RabbitMQ)...');
+            $setupCmd = $application->find('messenger:setup-transports');
+            $setupCmd->run(new ArrayInput(['--no-interaction' => true]), $output);
+
             $io->section('1. Scraping LinkedIn (Queuing messages)...');
             $linkedInCmd = $application->find('app:scrap:linkedin');
             $linkedInCmd->run(new ArrayInput([]), $output);

@@ -28,7 +28,7 @@ readonly class SearchResult implements IteratorAggregate, Countable, JsonSeriali
 
     public function count(): int
     {
-        return $this->total;
+        return count($this->results);
     }
 
     public function jsonSerialize(): mixed
